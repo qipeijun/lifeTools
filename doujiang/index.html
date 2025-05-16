@@ -3,128 +3,413 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>豆浆预约助手</title>
     <style>
+        /* iOS 风格基础样式 */
+        :root {
+            --ios-blue: #007AFF;
+            --ios-red: #FF3B30;
+            --ios-green: #34C759;
+            --ios-gray: #8E8E93;
+            --ios-light-gray: #F2F2F7;
+            --ios-extra-light-gray: #F9F9F9;
+            --ios-border: rgba(60, 60, 67, 0.1);
+            --ios-text-primary: #111111;
+            --ios-text-secondary: #3a3a3c;
+            --ios-text-tertiary: #6e6e73;
+        }
+        
+        * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, sans-serif;
             max-width: 500px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f5f5f5;
-            font-size: 16px;
+            background-color: var(--ios-light-gray);
+            font-size: 17px;
+            color: var(--ios-text-primary);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
         }
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+        
+        /* iOS 风格卡片 */
+        .ios-card {
+            background: #FFFFFF;
+            border-radius: 14px;
+            padding: 24px 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
-        h1 {
-            font-size: 24px;
+        
+        /* iOS 风格标题 */
+        .ios-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--ios-text-primary);
             text-align: center;
-            color: #333;
-            margin-bottom: 24px;
+            margin-bottom: 28px;
+            letter-spacing: -0.02em;
         }
-        .input-group {
-            margin-bottom: 20px;
+        
+        /* iOS 风格分组标题 */
+        .ios-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--ios-gray);
+            text-transform: uppercase;
+            margin: 20px 0 8px 10px;
+            letter-spacing: 0.03em;
         }
-        label {
+        
+        /* iOS 风格表单组 */
+        .ios-form-group {
+            margin-bottom: 22px;
+            position: relative;
+        }
+        
+        /* iOS 风格标签 */
+        .ios-label {
             display: block;
             margin-bottom: 8px;
-            font-weight: bold;
+            font-weight: 500;
+            color: var(--ios-text-secondary);
+            font-size: 17px;
         }
-        input, select {
+        
+        /* iOS 风格输入框 */
+        .ios-input {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            box-sizing: border-box;
+            padding: 12px 16px;
+            border: 1px solid var(--ios-border);
+            border-radius: 10px;
+            font-size: 17px;
+            background-color: #FFFFFF;
             -webkit-appearance: none;
+            color: var(--ios-text-primary);
         }
-        button {
-            background: #4CAF50;
+        
+        .ios-input:focus {
+            outline: none;
+            border-color: var(--ios-blue);
+            box-shadow: 0 0 0 1px var(--ios-blue);
+        }
+        
+        /* iOS 风格按钮 */
+        .ios-button {
+            background: var(--ios-blue);
             color: white;
             border: none;
-            padding: 14px 20px;
+            padding: 14px;
             width: 100%;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: 600;
             cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
+            margin-top: 12px;
+            transition: background-color 0.2s, transform 0.1s;
         }
-        button:hover {
-            background: #45a049;
+        
+        .ios-button:active {
+            opacity: 0.9;
+            transform: scale(0.98);
         }
-        button:active {
-            background: #3d8b40;
-        }
-        .result {
-            font-size: 18px;
+        
+        /* iOS 风格当前时间显示 */
+        .ios-current-time {
             text-align: center;
-            padding: 15px;
-            background: #e8f5e9;
-            border-radius: 8px;
-            margin-top: 20px;
-            display: none;
+            margin: 0 0 24px;
+            color: var(--ios-text-tertiary);
+            font-size: 15px;
+            font-weight: 400;
         }
-        .time-big {
-            font-size: 32px;
-            font-weight: bold;
-            color: #2e7d32;
+        
+        /* iOS 风格结果区域 */
+        .ios-result {
+            display: none;
+            padding-top: 24px;
+            border-top: 1px solid var(--ios-border);
+            margin-top: 32px;
+        }
+        
+        /* iOS 风格大时间显示 */
+        .ios-time-big {
+            font-size: 42px;
+            font-weight: 700;
+            color: var(--ios-blue);
+            margin: 20px 0 24px;
+            text-align: center;
+            letter-spacing: -0.02em;
+        }
+        
+        /* iOS 风格描述文本 */
+        .ios-description {
+            margin: 18px 0 22px;
+            line-height: 1.7;
+            color: var(--ios-text-secondary);
+            text-align: center;
+            font-size: 17px;
+            letter-spacing: -0.01em;
+            padding: 0 8px;
+        }
+        
+        .ios-description .ios-time-tag {
+            margin: 0 4px;
+            vertical-align: baseline;
+        }
+        
+        .ios-description-title {
+            font-weight: 500;
+            color: var(--ios-text-tertiary);
+            margin-bottom: 12px;
+            font-size: 15px;
+            text-align: center;
+            letter-spacing: 0.02em;
+        }
+        
+        /* iOS 风格智能建议 */
+        .ios-suggestion {
+            margin-top: 32px;
+            padding: 20px;
+            background: rgba(0, 122, 255, 0.06);
+            border-radius: 14px;
+            color: var(--ios-text-secondary);
+            font-size: 17px;
+            line-height: 1.6;
+        }
+        
+        .ios-suggestion-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--ios-blue);
+            font-size: 17px;
+        }
+        
+        .ios-suggestion p {
             margin: 10px 0;
         }
-        .current-time {
-            text-align: center;
-            margin-bottom: 15px;
-            color: #666;
-            background: #f0f8ff;
-            padding: 8px;
-            border-radius: 8px;
-            font-weight: 500;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        
+        /* iOS 风格时间标签 */
+        .ios-time-tag {
+            display: inline-block;
+            background: rgba(0, 122, 255, 0.1);
+            padding: 3px 10px;
+            border-radius: 6px;
+            margin: 0 2px;
+            color: var(--ios-blue);
+            font-weight: 600;
+            font-size: 16px;
         }
-        @media (max-width: 360px) {
-            body {
-                padding: 15px;
+        
+        /* iOS 风格时间选择器 */
+        input[type="time"] {
+            display: block;
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--ios-border);
+            border-radius: 10px;
+            font-size: 17px;
+            background-color: #FFFFFF;
+            color: var(--ios-text-primary);
+            -webkit-appearance: none;
+            text-align: left;
+            direction: ltr;
+            box-sizing: border-box;
+        }
+        
+        /* 手机兼容性修复 */
+        input[type="time"]::-webkit-datetime-edit {
+            text-align: left;
+            display: inline-block;
+            padding: 0;
+            width: auto;
+            min-width: 80px;
+        }
+        
+        input[type="time"]::-webkit-datetime-edit-fields-wrapper {
+            text-align: left;
+            padding-inline-start: 0;
+        }
+        
+        input[type="time"]::-webkit-inner-spin-button,
+        input[type="time"]::-webkit-clear-button {
+            display: none;
+        }
+        
+        input[type="time"]::-webkit-calendar-picker-indicator {
+            filter: invert(0.5);
+            margin-left: auto;
+            float: right;
+            position: relative;
+        }
+        
+        /* Safari兼容性 */
+        @media not all and (min-resolution:.001dpcm) { 
+            @supports (-webkit-appearance:none) {
+                input[type="time"] {
+                    text-align-last: left;
+                    padding-right: 25px;
+                }
             }
-            .card {
-                padding: 15px;
+        }
+        
+        /* iOS 特殊兼容处理 */
+        @supports (-webkit-touch-callout: none) {
+            input[type="time"] {
+                -webkit-align-items: flex-start;
+                align-items: flex-start;
+                -webkit-justify-content: flex-start;
+                justify-content: flex-start;
             }
-            h1 {
-                font-size: 22px;
-            }
+        }
+        
+        /* iOS 输入框容器 */
+        .ios-input-container {
+            position: relative;
+            width: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        /* u81eau5b9au4e49u65f6u95f4u9009u62e9u5668u5916u89c2 */
+        .ios-time-picker {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            position: relative;
+            display: block;
+            width: 100%;
+            padding: 12px 16px;
+            text-align: left;
+            border: 1px solid var(--ios-border);
+            border-radius: 10px;
+            background-color: #FFFFFF;
+            font-size: 17px;
+            color: var(--ios-text-primary);
+            box-sizing: border-box;
+            cursor: pointer;
+        }
+        
+        /* u60acu6d6eu72b6u6001 */
+        .ios-time-picker:hover {
+            border-color: var(--ios-blue);
+        }
+
+        /* u81eau5b9au4e49u65f6u95f4u9009u62e9u5668u7684u65f6u949fu56feu6807 */
+        .ios-time-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            pointer-events: none;
+            color: #8E8E93;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* u9690u85cfu539fu751fu65f6u95f4u9009u62e9u5668u7684u9ed8u8ba4u6837u5f0f */
+        #wake-time {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            border: none;
+            background: transparent;
+            width: 100%;
+            height: 100%;
+            color: var(--ios-text-primary);
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            z-index: 2;
+            cursor: pointer;
+        }
+        
+        /* u5b9eu9645u663eu793au7684u65f6u95f4u6587u5b57 */
+        .time-display {
+            font-size: 17px;
+            color: var(--ios-text-primary);
+            display: block;
+            width: 100%;
+            text-align: left;
         }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>豆浆预约助手</h1>
+    <div class="ios-card">
+        <h1 class="ios-title">豆浆预约助手</h1>
         
-        <div class="current-time" id="current-time">当前时间: --:--</div>
+        <div class="ios-current-time" id="current-time">当前时间: --:--</div>
         
-        <div class="input-group">
-            <label for="wake-time">明早想喝到豆浆的时间</label>
-            <input type="time" id="wake-time" value="07:30">
+        <div class="ios-form-group">
+            <label class="ios-label" for="wake-time">明早想喝到豆浆的时间</label>
+            <div class="ios-input-container">
+                <div class="ios-time-picker" onclick="document.getElementById('wake-time').click()">
+                    <span class="time-display" id="time-display">07:30</span>
+                    <div class="ios-time-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                    </div>
+                    <input type="time" id="wake-time" value="07:30" onchange="updateTimeDisplay(this)">
+                </div>
+            </div>
         </div>
         
-        <div class="input-group">
-            <label for="cook-time">豆浆机制作时间(分钟)</label>
-            <input type="number" id="cook-time" value="30" min="1" max="120">
+        <div class="ios-form-group">
+            <label class="ios-label" for="cook-time">豆浆机制作时间(分钟)</label>
+            <input type="number" id="cook-time" class="ios-input" value="30" min="1" max="120">
         </div>
         
-        <button onclick="calculateTime()">计算预约时间</button>
+        <button class="ios-button" onclick="calculateTime()">计算预约时间</button>
         
-        <div id="result" class="result">
-            <p>需要设置预约时间:</p>
-            <div class="time-big" id="reservation-time"></div>
-            <p id="description"></p>
+        <div id="result" class="ios-result">
+            <div class="ios-description-title">预约设置</div>
+            <div class="ios-time-big" id="reservation-time"></div>
+            <div class="ios-description" id="description"></div>
+            
+            <div class="ios-suggestion">
+                <div class="ios-suggestion-title">智能建议</div>
+                <div id="smart-suggestion"></div>
+            </div>
         </div>
     </div>
     
     <script>
-        // 更新当前时间
+        // 更新时间选择器显示的时间
+        function updateTimeDisplay(input) {
+            document.getElementById('time-display').textContent = input.value;
+        }
+        
+        // u70b9u51fbu65f6u95f4u9009u62e9u5668u533au57df
+        function handleTimePickerClick() {
+            const input = document.getElementById('wake-time');
+            
+            // u68c0u67e5u662fu5426u652fu6301showPickeru65b9u6cd5
+            if (input.showPicker && typeof input.showPicker === 'function') {
+                try {
+                    input.showPicker();
+                } catch (e) {
+                    // u5982u679cu65b9u6cd5u6709u9519u8befuff0cu5219u6a21u62dfu70b9u51fb
+                    input.click();
+                }
+            } else {
+                // u4e0du652fu6301showPickeru65b9u6cd5uff0cu5219u76f4u63a5u70b9u51fb
+                input.click();
+            }
+        }
+        
+        // u66f4u65b0u5f53u524du65f6u95f4
         function updateCurrentTime() {
             const now = new Date();
             const year = now.getFullYear();
@@ -154,6 +439,7 @@
             
             if (wakeTime) {
                 document.getElementById('wake-time').value = wakeTime;
+                document.getElementById('time-display').textContent = wakeTime;
             }
             
             if (cookTime) {
@@ -198,18 +484,59 @@
             
             // 格式化输出时间
             const reservationTimeStr = 
-                `${timeDiffHours}小时${timeDiffMinutes}分钟`;
+                `${timeDiffHours}<span style="font-size:30px;font-weight:500;color:var(--ios-text-tertiary)">小时</span> ${timeDiffMinutes}<span style="font-size:30px;font-weight:500;color:var(--ios-text-tertiary)">分钟</span>`;
             
             // 显示结果
-            document.getElementById('reservation-time').textContent = reservationTimeStr;
+            document.getElementById('reservation-time').innerHTML = reservationTimeStr;
             
             // 计算开始制作的具体时间点
             const startCookingHours = startCookingTime.getHours().toString().padStart(2, '0');
             const startCookingMinutes = startCookingTime.getMinutes().toString().padStart(2, '0');
             const startCookingTimeStr = `${startCookingHours}:${startCookingMinutes}`;
             
-            document.getElementById('description').textContent = 
-                `豆浆机将在${startCookingTimeStr}开始制作，${cookTime}分钟后(${wakeTimeStr})即可喝到新鲜豆浆`;
+            // 计算完成时间
+            const finishTime = new Date(startCookingTime.getTime() + cookTime * 60 * 1000);
+            const finishHours = finishTime.getHours().toString().padStart(2, '0');
+            const finishMinutes = finishTime.getMinutes().toString().padStart(2, '0');
+            const finishTimeStr = `${finishHours}:${finishMinutes}`;
+            
+            document.getElementById('description').innerHTML = 
+                `<div>豆浆机将在<span class="ios-time-tag">${startCookingTimeStr}</span>开始制作</div>
+                 <div style="margin-top:8px;">${cookTime}分钟后(<span class="ios-time-tag">${finishTimeStr}</span>)能喝到新鲜豆浆</div>`;
+            
+            // 按半小时(30分钟)为单位进行取整
+            // 计算最接近的半小时倍数
+            const totalMinutes = timeDiffHours * 60 + timeDiffMinutes;
+            const halfHourUnits = Math.round(totalMinutes / 30);
+            const roundedMinutes = halfHourUnits * 30;
+            const roundedHours = Math.floor(roundedMinutes / 60);
+            const remainingMinutes = roundedMinutes % 60;
+            
+            // 计算使用取整后预约时间的具体开始和完成时间点
+            const suggestedStartDate = new Date(now.getTime() + roundedMinutes * 60 * 1000);
+            const suggestedStartHours = suggestedStartDate.getHours().toString().padStart(2, '0');
+            const suggestedStartMinutes = suggestedStartDate.getMinutes().toString().padStart(2, '0');
+            
+            // 计算完成时间
+            const suggestedFinishDate = new Date(suggestedStartDate.getTime() + cookTime * 60 * 1000);
+            const suggestedFinishHours = suggestedFinishDate.getHours().toString().padStart(2, '0');
+            const suggestedFinishMinutes = suggestedFinishDate.getMinutes().toString().padStart(2, '0');
+            
+            let timeDisplay = '';
+            if (roundedHours > 0) {
+                timeDisplay += `${roundedHours}小时`;
+            }
+            if (remainingMinutes > 0) {
+                timeDisplay += `${remainingMinutes}分钟`;
+            }
+            
+            const smartSuggestion = `
+                <p>建议设置<span class="ios-time-tag">${timeDisplay}</span>预约时间</p>
+                <p style="margin-top:14px;">开始制作时间：<span class="ios-time-tag">${suggestedStartHours}:${suggestedStartMinutes}</span></p>
+                <p style="margin-top:10px;">豆浆完成时间：<span class="ios-time-tag">${suggestedFinishHours}:${suggestedFinishMinutes}</span></p>
+            `;
+            
+            document.getElementById('smart-suggestion').innerHTML = smartSuggestion;
             document.getElementById('result').style.display = 'block';
         }
         
@@ -219,6 +546,9 @@
             loadSettings();
             
             // 更新时间并设置定时器
+            updateTimeDisplay(document.getElementById('wake-time'));
+            
+            // 更新当前时间
             updateCurrentTime();
             setInterval(updateCurrentTime, 1000);
             
