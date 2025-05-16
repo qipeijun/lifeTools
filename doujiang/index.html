@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>豆浆预约助手</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            font-size: 16px;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 24px;
+            text-align: center;
+            color: #333;
+            margin-bottom: 24px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            -webkit-appearance: none;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            width: 100%;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button:active {
+            background: #3d8b40;
+        }
+        .result {
+            font-size: 18px;
+            text-align: center;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+        .time-big {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2e7d32;
+            margin: 10px 0;
+        }
+        .current-time {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #666;
+            background: #f0f8ff;
+            padding: 8px;
+            border-radius: 8px;
+            font-weight: 500;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        @media (max-width: 360px) {
+            body {
+                padding: 15px;
+            }
+            .card {
+                padding: 15px;
+            }
+            h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>豆浆预约助手</h1>
+        
+        <div class="current-time" id="current-time">当前时间: --:--</div>
+        
+        <div class="input-group">
+            <label for="wake-time">明早想喝到豆浆的时间</label>
+            <input type="time" id="wake-time" value="07:30">
+        </div>
+        
+        <div class="input-group">
+            <label for="cook-time">豆浆机制作时间(分钟)</label>
+            <input type="number" id="cook-time" value="30" min="1" max="120">
+        </div>
+        
+        <button onclick="calculateTime()">计算预约时间</button>
+        
+        <div id="result" class="result">
+            <p>需要设置预约时间:</p>
+            <div class="time-big" id="reservation-time"></div>
+            <p id="description"></p>
+        </div>
+    </div>
+    
+    <script>
+        // 更新当前时间
+        function updateCurrentTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const day = now.getDate().toString().padStart(2, '0');
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            
+            document.getElementById('current-time').textContent = 
+                `${year}年${month}月${day}日 ${hours}:${minutes}:${seconds}`;
+        }
+        
+        // 保存用户设置到本地存储
+        function saveSettings() {
+            const wakeTime = document.getElementById('wake-time').value;
+            const cookTime = document.getElementById('cook-time').value;
+            
+            localStorage.setItem('doujiang_wake_time', wakeTime);
+            localStorage.setItem('doujiang_cook_time', cookTime);
+        }
+        
+        // 从本地存储加载用户设置
+        function loadSettings() {
+            const wakeTime = localStorage.getItem('doujiang_wake_time');
+            const cookTime = localStorage.getItem('doujiang_cook_time');
+            
+            if (wakeTime) {
+                document.getElementById('wake-time').value = wakeTime;
+            }
+            
+            if (cookTime) {
+                document.getElementById('cook-time').value = cookTime;
+            }
+        }
+        
+        function calculateTime() {
+            // 获取用户输入
+            const wakeTimeStr = document.getElementById('wake-time').value;
+            const cookTime = parseInt(document.getElementById('cook-time').value);
+            
+            if (isNaN(cookTime) || cookTime <= 0) {
+                alert("请输入有效的制作时间");
+                return;
+            }
+            
+            // 保存设置到本地存储
+            saveSettings();
+            
+            // 获取当前时间
+            const now = new Date();
+            
+            // 解析早上时间
+            const [wakeHours, wakeMinutes] = wakeTimeStr.split(':').map(Number);
+            
+            // 计算豆浆开始制作的时间（喝豆浆时间减去制作时间）
+            const startCookingTime = new Date();
+            startCookingTime.setHours(wakeHours, wakeMinutes - cookTime, 0, 0);
+            
+            // 如果开始时间早于当前时间，说明是明天的时间
+            if (startCookingTime <= now) {
+                startCookingTime.setDate(startCookingTime.getDate() + 1);
+            }
+            
+            // 计算从现在到开始制作的时间差（毫秒）
+            const timeDiffMs = startCookingTime.getTime() - now.getTime();
+            
+            // 转换为小时和分钟
+            const timeDiffHours = Math.floor(timeDiffMs / (1000 * 60 * 60));
+            const timeDiffMinutes = Math.floor((timeDiffMs % (1000 * 60 * 60)) / (1000 * 60));
+            
+            // 格式化输出时间
+            const reservationTimeStr = 
+                `${timeDiffHours}小时${timeDiffMinutes}分钟`;
+            
+            // 显示结果
+            document.getElementById('reservation-time').textContent = reservationTimeStr;
+            
+            // 计算开始制作的具体时间点
+            const startCookingHours = startCookingTime.getHours().toString().padStart(2, '0');
+            const startCookingMinutes = startCookingTime.getMinutes().toString().padStart(2, '0');
+            const startCookingTimeStr = `${startCookingHours}:${startCookingMinutes}`;
+            
+            document.getElementById('description').textContent = 
+                `豆浆机将在${startCookingTimeStr}开始制作，${cookTime}分钟后(${wakeTimeStr})即可喝到新鲜豆浆`;
+            document.getElementById('result').style.display = 'block';
+        }
+        
+        // 页面加载完成后自动计算一次并开始更新当前时间
+        window.onload = function() {
+            // 加载用户设置
+            loadSettings();
+            
+            // 更新时间并设置定时器
+            updateCurrentTime();
+            setInterval(updateCurrentTime, 1000);
+            
+            // 计算预约时间
+            calculateTime();
+        }
+    </script>
+</body>
+</html>
