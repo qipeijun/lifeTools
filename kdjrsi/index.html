@@ -269,9 +269,27 @@
     renderPreviewChart(j, rsi);
   }
 
+  /**
+   * 渲染图表 (iOS 风格优化版)
+   */
   function renderPreviewChart(j, rsi) {
     const ctx = document.getElementById('previewChart').getContext('2d');
     if (window._chartInstance) window._chartInstance.destroy();
+
+    // --- 从 CSS 变量中获取颜色和字体，确保风格统一 ---
+    const computedStyle = getComputedStyle(document.documentElement);
+    const iosBlue = computedStyle.getPropertyValue('--ios-blue').trim();
+    const iosTextPrimary = computedStyle.getPropertyValue('--ios-text-primary').trim();
+    const iosTextSecondary = computedStyle.getPropertyValue('--ios-text-secondary').trim();
+    const iosTextTertiary = computedStyle.getPropertyValue('--ios-text-tertiary').trim();
+    const iosBorder = computedStyle.getPropertyValue('--ios-border').trim();
+    const bodyFontFamily = computedStyle.fontFamily;
+
+    // --- 创建一个从上到下的蓝色渐变背景 ---
+    const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+    gradient.addColorStop(0, 'rgba(0, 122, 255, 0.3)'); // 顶部颜色 (较浓)
+    gradient.addColorStop(1, 'rgba(0, 122, 255, 0)');   // 底部颜色 (透明)
+
     window._chartInstance = new Chart(ctx, {
       type: 'line',
       data: {
@@ -279,13 +297,18 @@
         datasets: [{
           label: '指标值',
           data: [rsi, j],
-          fill: false,
-          borderColor: 'var(--ios-blue)',
-          backgroundColor: 'var(--ios-blue)',
+          fill: true,                  // 开启填充
+          backgroundColor: gradient,     // 应用渐变背景
+          borderColor: iosBlue,
+          borderWidth: 2.5,              // 线条加粗一点
           tension: 0.4,
-          pointBackgroundColor: 'var(--ios-blue)',
+          pointBackgroundColor: '#FFFFFF', // 数据点: 白色填充
+          pointBorderColor: iosBlue,     // 数据点: 蓝色边框
+          pointBorderWidth: 2,
           pointRadius: 5,
-          pointHoverRadius: 7
+          pointHoverRadius: 7,
+          pointHoverBackgroundColor: '#FFFFFF',
+          pointHoverBorderColor: iosBlue,
         }]
       },
       options: {
@@ -295,11 +318,20 @@
           legend: { display: false },
           tooltip: {
             enabled: true,
-            backgroundColor: 'rgba(0,0,0,0.7)',
-            titleFont: { size: 14 },
-            bodyFont: { size: 12 },
-            padding: 10,
-            cornerRadius: 8
+            backgroundColor: 'rgba(249, 249, 249, 0.9)', // iOS 风格的毛玻璃背景
+            titleFont: { size: 14, weight: '600', family: bodyFontFamily },
+            titleColor: iosTextSecondary,
+            bodyFont: { size: 17, weight: 'bold', family: bodyFontFamily },
+            bodyColor: iosTextPrimary,
+            padding: 12,
+            cornerRadius: 10,
+            borderColor: iosBorder,
+            borderWidth: 1,
+            displayColors: false, // 隐藏颜色小方块
+            callbacks: {
+              title: (tooltipItems) => tooltipItems[0].label,
+              label: (context) => `值为: ${context.parsed.y}`
+            }
           }
         },
         scales: {
@@ -308,19 +340,23 @@
             max: 120,
             ticks: {
               stepSize: 20,
-              color: 'var(--ios-text-tertiary)'
+              color: iosTextTertiary,
+              font: { family: bodyFontFamily, size: 12 }
             },
             grid: {
-              color: 'var(--ios-border)'
+              color: iosBorder,
+              border: {
+                dash: [4, 4] // 将网格线变为虚线
+              }
             }
           },
           x: {
             ticks: {
-              color: 'var(--ios-text-secondary)'
+              color: iosTextSecondary,
+              font: { family: bodyFontFamily, size: 14, weight: '500' }
             },
-            grid: {
-              display: false
-            }
+            grid: { display: false },
+            border: { display: false } // 隐藏X轴本身那条线，更简洁
           }
         }
       }
