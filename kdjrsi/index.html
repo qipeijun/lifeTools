@@ -234,7 +234,7 @@
     const resultContainer = document.getElementById("result-container");
     const resultTextBox = document.getElementById("result-text");
 
-    if (isNaN(j) || isNaN(rsi) || !volume || !cycle) {
+    if (isNaN(j) || isNaN(rsi) /*|| !volume || !cycle*/) {
       alert("⚠️ 请完整选择所有参数");
       return;
     }
