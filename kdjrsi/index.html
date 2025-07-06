@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KDJ + RSI 智能判断工具</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+      background: #f2f2f7;
+      padding: 20px;
+    }
+    .container {
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    h2 {
+      font-size: 20px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    label {
+      font-weight: 600;
+      margin-top: 15px;
+      display: block;
+    }
+    select {
+      width: 100%;
+      padding: 12px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      font-size: 16px;
+      background: #f9f9f9;
+    }
+    button {
+      width: 100%;
+      margin-top: 30px;
+      padding: 14px;
+      background: #007AFF;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      white-space: pre-line;
+    }
+    canvas {
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>KDJ + RSI 智能判断</h2>
+
+    <label for="j">J 值（反映短期强弱，可能为负）</label>
+    <select id="j">
+      <option value="">请选择</option>
+      <option value="-30">-30（极度超卖）</option>
+      <option value="-20">-20（极弱）</option>
+      <option value="-10">-10（偏弱）</option>
+      <option value="0">0（极低）</option>
+      <option value="10">10（低位）</option>
+      <option value="20">20（偏低）</option>
+      <option value="30">30（中低）</option>
+      <option value="40">40（中等）</option>
+      <option value="50">50（中性）</option>
+      <option value="60">60（略强）</option>
+      <option value="70">70（偏高）</option>
+      <option value="80">80（强势）</option>
+      <option value="90">90（超买）</option>
+      <option value="100">100（极强）</option>
+      <option value="110">110（过热）</option>
+    </select>
+
+    <label for="rsi">RSI 值（反映买卖强度）</label>
+    <select id="rsi">
+      <option value="">请选择</option>
+      <option value="-10">-10（异常极弱）</option>
+      <option value="0">0（极弱）</option>
+      <option value="10">10（超卖）</option>
+      <option value="20">20（偏弱）</option>
+      <option value="30">30（低位）</option>
+      <option value="40">40（中低）</option>
+      <option value="50">50（中性）</option>
+      <option value="60">60（中强）</option>
+      <option value="70">70（偏强）</option>
+      <option value="80">80（超买）</option>
+      <option value="90">90（强势）</option>
+      <option value="100">100（极强）</option>
+    </select>
+
+    <label for="volume">成交量状态（与均量对比）</label>
+    <select id="volume">
+      <option value="">请选择</option>
+      <option value="low">缩量（<0.7倍）</option>
+      <option value="normal">中性（≈均量）</option>
+      <option value="high">放量（>1.5倍）</option>
+    </select>
+
+    <label for="cycle">分析周期</label>
+    <select id="cycle">
+      <option value="day">日K</option>
+      <option value="week">周K</option>
+      <option value="hour">小时K</option>
+    </select>
+
+    <button onclick="judgeSignal()">判断当前状态</button>
+    <div class="result" id="result"></div>
+    <canvas id="previewChart" height="200"></canvas>
+<p id="chart-note" style="font-size:14px;text-align:center;color:#666;margin-top:10px;display:none;">
+  图解说明：蓝线连接当前 RSI 和 J 值，反映当前两个指标的相对位置。高位区域（接近顶部）风险大，低位区域（接近底部）关注机会。
+</p>
+  </div>
+
+  <script>
+    function judgeSignal() {
+      const j = parseFloat(document.getElementById("j").value);
+      const rsi = parseFloat(document.getElementById("rsi").value);
+      const volume = document.getElementById("volume").value;
+      const cycle = document.getElementById("cycle").value;
+      const resultBox = document.getElementById("result");
+
+      if (isNaN(j) || isNaN(rsi) || !cycle) {
+        resultBox.innerText = "⚠️ 请完整选择 J 值、RSI 值 和 周期";
+        return;
+      }
+
+      let signal = "目前市场信号较为中性，建议耐心等待更明确的买卖时机。";
+
+      if (j <= 10 && rsi <= 30) {
+        signal = "J值与RSI双双处于低位，市场可能处于阶段性底部，可考虑小仓位试探性买入。";
+      } else if (j >= 90 && rsi >= 70) {
+        signal = "技术指标处于高位，市场可能面临回调压力，建议逐步减仓或止盈。";
+      } else if (j <= 30 && rsi < 50) {
+        signal = "处于相对低位，若后续有放量配合，可关注反弹机会。";
+      } else if (j >= 70 && rsi > 50) {
+        signal = "指标偏高但不极端，若无量能配合需警惕假突破。";
+      }
+
+      if (volume === "low" && j > 70 && rsi > 60) {
+        signal += "\n⚠️ 当前缩量上涨，可能是诱多行为，建议保持谨慎。";
+      } else if (volume === "high" && j < 30 && rsi < 50) {
+        signal += "\n✅ 放量下跌后出现低位信号，可能是真正的反转起点。";
+      }
+
+      let cycleText = "\n当前周期：";
+      if (cycle === "week") cycleText += "周K（中期趋势参考，信号更具延续性）";
+      else if (cycle === "hour") cycleText += "小时K（短线信号参考，波动快）";
+      else cycleText += "日K（日常主参考，平衡波动与趋势）";
+
+      resultBox.innerText = signal + "\n" + cycleText;
+
+      renderPreviewChart(j, rsi);
+      document.getElementById('chart-note').style.display = 'block';
+    }
+
+    function renderPreviewChart(j, rsi) {
+      const ctx = document.getElementById('previewChart').getContext('2d');
+      if (window._chartInstance) window._chartInstance.destroy();
+      window._chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['RSI', 'J值'],
+          datasets: [{
+            label: '指标值',
+            data: [rsi, j],
+            fill: false,
+            borderColor: '#007AFF',
+            tension: 0.4
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: { enabled: true }
+          },
+          scales: {
+            y: {
+              min: -40,
+              max: 120,
+              ticks: { stepSize: 20 }
+            }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>
