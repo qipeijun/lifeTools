@@ -10,3 +10,10 @@
 <p>
   <img src="./images/doujiang-qr.jpg" alt="豆浆预约助手" width="180" />
 </p>
+
+
+## KDJ-RSI工具
+
+[在线访问](https://qipeijun.github.io/lifeTools/kdjrsi/)
+
+KDJ + RSI 智能判断
