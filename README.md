@@ -17,3 +17,9 @@
 [在线访问](https://qipeijun.github.io/lifeTools/kdjrsi/)
 
 KDJ + RSI 智能判断
+
+**扫码访问：**
+<p>
+  <img src="./images/kdj-qr.png" alt="KDJ-RSI工具" width="180" />
+</p>
+
