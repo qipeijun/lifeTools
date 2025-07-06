@@ -119,12 +119,9 @@
 
     .ios-suggestion {
       margin-top: 16px;
-      padding: 10px;
+      padding: 20px; /* 优化：增加内边距，提供呼吸感 */
       background: rgba(0, 122, 255, 0.06);
       border-radius: 14px;
-      color: var(--ios-text-secondary);
-      font-size: 17px;
-      line-height: 1.6;
       white-space: pre-line; /* 保持换行 */
     }
 
@@ -133,6 +130,14 @@
       margin-bottom: 12px;
       color: var(--ios-blue);
       font-size: 17px;
+    }
+
+    /* 优化：为结果文本创建独立的样式规则 */
+    .ios-suggestion p {
+      margin: 0; /* 清除 p 标签的默认外边距 */
+      font-size: 16px; /* 略微缩小字号，与标题形成对比 */
+      color: var(--ios-text-secondary); /* 使用次级文本颜色，保持一致性 */
+      line-height: 1.6;
     }
 
     .chart-note {
@@ -252,9 +257,9 @@
     }
 
     if (volume === "low" && j > 70 && rsi > 60) {
-      signal += "\n⚠️ 当前上涨但伴随缩量，说明动力不足，可能是诱多行情，建议谨慎追高。";
+      signal += "\n\n⚠️ 当前上涨但伴随缩量，说明动力不足，可能是诱多行情，建议谨慎追高。";
     } else if (volume === "high" && j < 30 && rsi < 50) {
-      signal += "\n✅ 放量下跌后指标落入低位，市场可能在酝酿反转，值得关注进场机会。";
+      signal += "\n\n✅ 放量下跌后指标落入低位，市场可能在酝酿反转，值得关注进场机会。";
     }
 
     let cycleText = "\n当前周期：";
@@ -262,7 +267,8 @@
     else if (cycle === "hour") cycleText += "小时K (短线信号参考，波动快)";
     else cycleText += "日K (日常主参考，平衡波动与趋势)";
 
-    resultTextBox.innerText = signal + "\n\n" + cycleText;
+    // 优化：使用两个换行符创建段落间距
+    resultTextBox.innerText = signal + "\n" + cycleText;
 
     // 显示结果区域并渲染图表
     resultContainer.style.display = 'block';
