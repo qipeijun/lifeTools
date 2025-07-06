@@ -368,6 +368,40 @@
       }
     });
   }
+
+  // 隐藏微信分享菜单
+  function hideWeChatShareMenu() {
+    if (typeof WeixinJSBridge === "undefined") {
+      if (document.addEventListener) {
+        document.addEventListener('WeixinJSBridgeReady', onWeixinJSBridgeReady, false);
+      } else if (document.attachEvent) {
+        document.attachEvent('WeixinJSBridgeReady', onWeixinJSBridgeReady);
+      }
+    } else {
+      onWeixinJSBridgeReady();
+    }
+
+    // 处理 WeixinJSBridgeReady 事件，隐藏分享菜单
+    function onWeixinJSBridgeReady() {
+      // 调用 WeixinJSBridge 接口隐藏菜单项
+      WeixinJSBridge.invoke('menu:setMainMenu', {
+        'menuList': [
+          'menuItem:share:appMessage',  // 分享给朋友
+          'menuItem:share:timeline',    // 分享到朋友圈
+          'menuItem:share:weiboApp',    // 分享到微博
+          'menuItem:favorite',          // 收藏
+          'menuItem:share:qzone'        // 分享到 QQ 空间
+        ]
+      }, function(res) {
+        if (res.err_msg === "menu:setMainMenu:ok") {
+          console.log("分享菜单已被隐藏");
+        }
+      });
+    }
+  }
+
+  hideWeChatShareMenu();
+
 </script>
 </body>
 </html>
