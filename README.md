@@ -23,3 +23,14 @@ KDJ + RSI 智能判断
   <img src="./images/kdj-qr.png" alt="KDJ-RSI工具" width="180" />
 </p>
 
+
+## 做T利润计算
+
+[在线访问](https://qipeijun.github.io/lifeTools/buysell/)
+
+做T利润计算器
+
+**扫码访问：**
+<p>
+  <img src="./images/buysell.png" alt="做T利润计算器" width="180" />
+</p>

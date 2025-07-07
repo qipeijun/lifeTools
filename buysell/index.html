@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>股票做T利润计算器</title>
+    <style>
+        /* --- 核心 iOS 风格 --- */
+        :root {
+            --ios-blue: #007AFF;
+            --ios-red: #FF3B30;
+            --ios-green: #34C759;
+            --ios-gray: #8E8E93;
+            --ios-light-gray: #F2F2F7;
+            --ios-extra-light-gray: #F9F9F9;
+            --ios-border: rgba(60, 60, 67, 0.1);
+            --ios-text-primary: #111111;
+            --ios-text-secondary: #3a3a3c;
+            --ios-text-tertiary: #6e6e73;
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, sans-serif;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: var(--ios-light-gray);
+            font-size: 17px;
+            color: var(--ios-text-primary);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .ios-card {
+            background: #FFFFFF;
+            border-radius: 14px;
+            padding: 24px 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .ios-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--ios-text-primary);
+            text-align: center;
+            margin-bottom: 28px;
+            letter-spacing: -0.02em;
+        }
+
+        .ios-form-group {
+            margin-bottom: 22px;
+            position: relative;
+        }
+
+        .ios-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--ios-text-secondary);
+            font-size: 17px;
+        }
+
+        .ios-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--ios-border);
+            border-radius: 10px;
+            font-size: 17px;
+            background-color: #FFFFFF;
+            color: var(--ios-text-primary);
+        }
+
+        .ios-input:focus {
+            outline: none;
+            border-color: var(--ios-blue);
+            box-shadow: 0 0 0 1px var(--ios-blue);
+        }
+
+        .ios-input::placeholder {
+            color: var(--ios-text-tertiary);
+            opacity: 0.8;
+        }
+
+        .ios-button {
+            background: var(--ios-blue);
+            color: white;
+            border: none;
+            padding: 14px;
+            width: 100%;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .ios-button:active {
+            opacity: 0.9;
+            transform: scale(0.98);
+        }
+
+        .ios-result {
+            display: none; /* 默认隐藏 */
+            padding: 20px;
+            margin-top: 24px;
+            border-radius: 14px;
+            background: var(--ios-extra-light-gray);
+        }
+
+        .ios-result-grid {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            text-align: center;
+        }
+
+        .ios-result-item {
+            flex: 1;
+        }
+
+        .ios-result-label {
+            font-size: 15px;
+            color: var(--ios-text-tertiary);
+            margin-bottom: 6px;
+        }
+
+        .ios-result-value {
+            font-weight: 600;
+        }
+
+        #profit-amount {
+            font-size: 24px;
+        }
+
+        #profit-percentage {
+            font-size: 18px;
+        }
+
+        .profit {
+            color: var(--ios-red);
+        }
+
+        .loss {
+            color: var(--ios-green);
+        }
+
+    </style>
+</head>
+<body>
+<div class="ios-card">
+    <h1 class="ios-title">做 T 利润计算器</h1>
+
+    <div class="ios-form-group">
+        <label for="buyPrice" class="ios-label">买入价格</label>
+        <input type="number" id="buyPrice" class="ios-input" placeholder="输入成本价" inputmode="decimal">
+    </div>
+
+    <div class="ios-form-group">
+        <label for="sellPrice" class="ios-label">卖出价格</label>
+        <input type="number" id="sellPrice" class="ios-input" placeholder="输入卖出价" inputmode="decimal">
+    </div>
+
+    <div class="ios-form-group">
+        <label for="quantity" class="ios-label">数量 (股)</label>
+        <input type="number" id="quantity" class="ios-input" placeholder="输入交易股数" inputmode="numeric">
+    </div>
+
+    <div class="ios-form-group">
+        <label for="commission" class="ios-label">手续费 (元)</label>
+        <input type="number" id="commission" class="ios-input" placeholder="选填，交易总手续费" inputmode="decimal">
+    </div>
+
+    <button class="ios-button" onclick="calculateProfit()">计算利润</button>
+
+    <div id="result-container" class="ios-result">
+        <div class="ios-result-grid">
+            <div class="ios-result-item">
+                <div class="ios-result-label">盈亏</div>
+                <div id="profit-amount" class="ios-result-value">¥0.00</div>
+            </div>
+            <div class="ios-result-item">
+                <div class="ios-result-label">收益率</div>
+                <div id="profit-percentage" class="ios-result-value">0.00%</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function calculateProfit() {
+        const buyPrice = parseFloat(document.getElementById("buyPrice").value);
+        const sellPrice = parseFloat(document.getElementById("sellPrice").value);
+        const quantity = parseInt(document.getElementById("quantity").value);
+        let commission = parseFloat(document.getElementById("commission").value);
+
+        const resultContainer = document.getElementById("result-container");
+        const profitAmountEl = document.getElementById("profit-amount");
+        const profitPercentageEl = document.getElementById("profit-percentage");
+
+        if (isNaN(buyPrice) || isNaN(sellPrice) || isNaN(quantity)) {
+            alert("⚠️ 请输入有效的买入价、卖出价和数量。");
+            return;
+        }
+
+        if (buyPrice <= 0 || sellPrice <= 0 || quantity <= 0) {
+            alert("⚠️ 所有数值必须大于0。");
+            return;
+        }
+
+        if (isNaN(commission)) {
+            commission = 0;
+        }
+
+        const netProfit = (sellPrice - buyPrice) * quantity - commission;
+        const costBasis = buyPrice * quantity;
+        const percentage = costBasis !== 0 ? (netProfit / costBasis) * 100 : 0;
+
+        profitAmountEl.textContent = `${netProfit > 0 ? '+' : ''}${netProfit.toFixed(2)}`;
+        profitPercentageEl.textContent = `${percentage.toFixed(2)}%`;
+
+        if (netProfit >= 0) {
+            profitAmountEl.className = "ios-result-value profit";
+            profitPercentageEl.className = "ios-result-value profit";
+        } else {
+            profitAmountEl.className = "ios-result-value loss";
+            profitPercentageEl.className = "ios-result-value loss";
+        }
+
+        resultContainer.style.display = 'block';
+    }
+</script>
+</body>
+</html>
