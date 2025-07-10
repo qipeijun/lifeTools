@@ -257,34 +257,53 @@
 
     let signal = "📊 当前市场暂无明显信号，建议耐心观察，不宜贸然操作。";
 
-    if (j <= 10 && rsi <= 30) {
-      signal = "📉 J值与RSI都处于低位，说明市场处在相对底部区域，可以关注逢低吸纳的机会。";
-    } else if (j >= 90 && rsi >= 70) {
-      signal = "📈 J值与RSI都在高位，市场短期或有见顶压力，建议逐步减仓或考虑止盈。";
-    } else if (j <= 30 && rsi < 50) {
-      signal = "📉 指标偏低，虽然尚未极端，但若配合成交量放大，可能出现反弹信号。";
-    } else if (j >= 70 && rsi > 50) {
-      signal = "📈 指标略偏高，若没有放量支持，需防范冲高回落。";
+    // 顶部判断
+    const isTop = (j >= 90 && rsi >= 70) ||
+            (j >= 80 && rsi >= 60 && macd === "dead-cross") ||
+            (macd === "top-divergence" || macd === "red-bar-shrink") ||
+            (volume === "low" && j > 70 && rsi > 60);
+
+    if (isTop) {
+      const details = [];
+      if (j >= 90 && rsi >= 70) details.push("• KDJ 与 RSI 明显超买");
+      if (macd === "dead-cross") details.push("• MACD 死叉，动能衰竭");
+      if (macd === "top-divergence") details.push("• 出现顶背离信号");
+      if (macd === "red-bar-shrink") details.push("• 红柱缩短，动能减弱");
+      if (volume === "low" && j > 70 && rsi > 60) details.push("• 上涨缩量，或为诱多");
+      signal = "📈 多项指标显示市场处于相对高位：\n\n" + details.join("\n") + "\n\n⚠️ 建议逐步止盈，防范冲高回落。";
     }
 
-    if (volume === "low" && j > 70 && rsi > 60) {
-      signal += "\n\n⚠️ 当前上涨但伴随缩量，说明动力不足，可能是诱多行情，建议谨慎追高。";
-    } else if (volume === "high" && j < 30 && rsi < 50) {
-      signal += "\n\n✅ 放量下跌后指标落入低位，市场可能在酝酿反转，值得关注进场机会。";
+    // 底部判断
+    const isBottom = (j <= 10 && rsi <= 30) ||
+            (j <= 20 && rsi <= 40 && macd === "golden-cross-below") ||
+            (macd === "bottom-divergence") ||
+            (volume === "high" && j < 30 && rsi < 50);
+
+    if (isBottom) {
+      const details = [];
+      if (j <= 10 && rsi <= 30) details.push("• KDJ 与 RSI 明显超卖");
+      if (macd === "golden-cross-below") details.push("• MACD 金叉于0轴下，反弹信号");
+      if (macd === "bottom-divergence") details.push("• 出现底背离信号");
+      if (volume === "high" && j < 30 && rsi < 50) details.push("• 放量下跌后指标落入低位");
+      signal = "📉 多项指标显示市场处于相对低位：\n\n" + details.join("\n") + "\n\n✅ 可关注阶段性反弹或逢低吸纳机会。";
     }
 
+    // 默认判断
+    if (!isTop && !isBottom) {
+      if (j <= 30 && rsi < 50) {
+        signal = "📉 指标偏低，虽然尚未极端，但若配合成交量放大，可能出现反弹信号。";
+      } else if (j >= 70 && rsi > 50) {
+        signal = "📈 指标略偏高，若没有放量支持，需防范冲高回落。";
+      } else {
+        signal = "📊 当前市场暂无明显信号，建议耐心观察，不宜贸然操作。";
+      }
+    }
+
+    // MACD 简洁提示
     if (macd === "golden-cross-above") {
-      signal += "\n\n✅ MACD 出现金叉（0轴上），趋势向上动力强，利好延续上涨。";
-    } else if (macd === "golden-cross-below") {
-      signal += "\n\n✅ MACD 金叉（0轴下），可能处于反弹初期，注意持续性确认。";
-    } else if (macd === "dead-cross") {
-      signal += "\n\n⚠️ MACD 出现死叉，短期趋势可能转弱，注意防守。";
-    } else if (macd === "red-bar-shrink") {
-      signal += "\n\n⚠️ MACD 红柱缩短，多头动能减弱，建议谨慎追高。";
-    } else if (macd === "top-divergence") {
-      signal += "\n\n⚠️ 出现顶背离信号，可能处于高位转折区，注意减仓或止盈。";
-    } else if (macd === "bottom-divergence") {
-      signal += "\n\n✅ 出现底背离信号，市场可能阶段筑底，关注反弹机会。";
+      signal += "\n\n✅ MACD 出现金叉（0轴上），多头趋势增强。";
+    } else if (macd === "dead-cross" && !isTop) {
+      signal += "\n\n⚠️ MACD 死叉，需注意趋势转弱风险。";
     }
 
     let cycleText = "\n当前周期：";
@@ -292,7 +311,7 @@
     else if (cycle === "hour") cycleText += "小时K (短线信号参考，波动快)";
     else cycleText += "日K (日常主参考，平衡波动与趋势)";
 
-    resultTextBox.innerText = signal + "\n" + cycleText;
+    resultTextBox.innerText = signal + cycleText;
     resultContainer.style.display = 'block';
     renderPreviewChart(j, rsi);
   }
