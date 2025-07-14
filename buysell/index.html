@@ -152,6 +152,8 @@
             color: var(--ios-green);
         }
 
+
+
     </style>
 </head>
 <body>
@@ -192,9 +194,78 @@
             </div>
         </div>
     </div>
+
+
 </div>
 
 <script>
+    // 缓存键名
+    const CACHE_KEYS = {
+        BUY_PRICE: 'buysell_buyPrice',
+        SELL_PRICE: 'buysell_sellPrice',
+        QUANTITY: 'buysell_quantity',
+        COMMISSION: 'buysell_commission'
+    };
+
+    // 页面加载时恢复缓存数据
+    window.addEventListener('DOMContentLoaded', function() {
+        loadFromCache();
+    });
+
+    // 保存数据到缓存
+    function saveToCache() {
+        const buyPrice = document.getElementById("buyPrice").value;
+        const sellPrice = document.getElementById("sellPrice").value;
+        const quantity = document.getElementById("quantity").value;
+        const commission = document.getElementById("commission").value;
+
+        localStorage.setItem(CACHE_KEYS.BUY_PRICE, buyPrice);
+        localStorage.setItem(CACHE_KEYS.SELL_PRICE, sellPrice);
+        localStorage.setItem(CACHE_KEYS.QUANTITY, quantity);
+        localStorage.setItem(CACHE_KEYS.COMMISSION, commission);
+    }
+
+    // 从缓存加载数据
+    function loadFromCache() {
+        const buyPrice = localStorage.getItem(CACHE_KEYS.BUY_PRICE) || '';
+        const sellPrice = localStorage.getItem(CACHE_KEYS.SELL_PRICE) || '';
+        const quantity = localStorage.getItem(CACHE_KEYS.QUANTITY) || '';
+        const commission = localStorage.getItem(CACHE_KEYS.COMMISSION) || '';
+
+        document.getElementById("buyPrice").value = buyPrice;
+        document.getElementById("sellPrice").value = sellPrice;
+        document.getElementById("quantity").value = quantity;
+        document.getElementById("commission").value = commission;
+
+        // 如果缓存数据完整且合法，自动计算结果
+        if (buyPrice && sellPrice && quantity) {
+            const buyPriceNum = parseFloat(buyPrice);
+            const sellPriceNum = parseFloat(sellPrice);
+            const quantityNum = parseInt(quantity);
+            
+            if (!isNaN(buyPriceNum) && !isNaN(sellPriceNum) && !isNaN(quantityNum) &&
+                buyPriceNum > 0 && sellPriceNum > 0 && quantityNum > 0) {
+                // 延迟一点执行，确保DOM完全加载
+                setTimeout(() => {
+                    calculateProfit();
+                }, 100);
+            }
+        }
+    }
+
+
+
+    // 为所有输入框添加自动保存功能
+    document.addEventListener('DOMContentLoaded', function() {
+        const inputs = ['buyPrice', 'sellPrice', 'quantity', 'commission'];
+        
+        inputs.forEach(id => {
+            const input = document.getElementById(id);
+            input.addEventListener('input', saveToCache);
+            input.addEventListener('change', saveToCache);
+        });
+    });
+
     function calculateProfit() {
         const buyPrice = parseFloat(document.getElementById("buyPrice").value);
         const sellPrice = parseFloat(document.getElementById("sellPrice").value);
