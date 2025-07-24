@@ -3,417 +3,540 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>KDJ + RSI 智能判断工具</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta name="description" content="KDJ和RSI技术指标智能分析工具，帮助投资者进行股票技术分析和买卖信号判断">
+  <meta name="keywords" content="KDJ,RSI,技术分析,股票分析,买卖信号,投资工具">
+  <meta name="author" content="技术分析工具">
+  <meta name="robots" content="index,follow">
+  <meta name="theme-color" content="#3366CC">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="KDJ+RSI分析">
+  <title>KDJ + RSI 智能分析工具 - 专业技术指标判断</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
   <style>
-    /* --- 从 豆浆助手 迁移的核心 iOS 风格 --- */
+    /* CSS变量定义 - 支持主题切换 */
     :root {
-      --ios-blue: #007AFF;
-      --ios-red: #FF3B30;
-      --ios-green: #34C759;
-      --ios-gray: #8E8E93;
-      --ios-light-gray: #F2F2F7;
-      --ios-extra-light-gray: #F9F9F9;
-      --ios-border: rgba(60, 60, 67, 0.1);
-      --ios-text-primary: #111111;
-      --ios-text-secondary: #3a3a3c;
-      --ios-text-tertiary: #6e6e73;
+      --primary: #3366CC;
+      --danger: #E53E3E;
+      --success: #38A169;
+      --warning: #DD6B20;
+      --gray: #718096;
+      --light-gray: #F7FAFC;
+      --extra-light-gray: #FAFAFA;
+      --border: #E2E8F0;
+      --text-primary: #1A202C;
+      --text-secondary: #4A5568;
+      --text-tertiary: #718096;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      --shadow-light: 0 1px 3px rgba(0, 0, 0, 0.03);
     }
 
+    /* 深色模式支持 */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --primary: #4C78DB;
+        --text-primary: #F7FAFC;
+        --text-secondary: #E2E8F0;
+        --text-tertiary: #A0AEC0;
+        --light-gray: #2D3748;
+        --extra-light-gray: #1A202C;
+        --border: #4A5568;
+      }
+    }
+
+    /* 重置和基础样式 */
     * {
       -webkit-tap-highlight-color: transparent;
       -webkit-touch-callout: none;
       box-sizing: border-box;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, sans-serif;
       max-width: 500px;
       margin: 0 auto;
-      padding: 20px;
-      background-color: var(--ios-light-gray);
+      padding: 16px;
+      background: var(--light-gray);
       font-size: 17px;
-      color: var(--ios-text-primary);
+      color: var(--text-primary);
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      transition: opacity 0.3s ease;
     }
 
+    /* 页面加载动画 */
+    body.loading {
+      opacity: 0;
+    }
+
+    /* 卡片样式 */
     .ios-card {
-      background: #FFFFFF;
-      border-radius: 14px;
-      padding: 24px 20px;
-      margin-bottom: 16px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      background: var(--extra-light-gray);
+      border-radius: 12px;
+      padding: 28px 24px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
+    .ios-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    /* 标题样式 */
     .ios-title {
       font-size: 28px;
       font-weight: 700;
-      color: var(--ios-text-primary);
+      color: var(--primary);
       text-align: center;
-      margin-bottom: 28px;
+      margin-bottom: 32px;
       letter-spacing: -0.02em;
-    }
-
-    .ios-form-group {
-      margin-bottom: 22px;
       position: relative;
     }
 
-    .ios-label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 500;
-      color: var(--ios-text-secondary);
-      font-size: 17px;
+    .ios-title::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 2px;
+      background: var(--primary);
+      border-radius: 1px;
     }
 
+    /* 表单组样式 */
+    .ios-form-group {
+      margin-bottom: 24px;
+      position: relative;
+      animation: slideInUp 0.4s ease forwards;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .ios-form-group:nth-child(2) { animation-delay: 0.1s; }
+    .ios-form-group:nth-child(3) { animation-delay: 0.2s; }
+    .ios-form-group:nth-child(4) { animation-delay: 0.3s; }
+    .ios-form-group:nth-child(5) { animation-delay: 0.4s; }
+
+    @keyframes slideInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* 标签样式 */
+    .ios-label {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      font-size: 16px;
+      gap: 8px;
+    }
+
+    .ios-label-icon {
+      width: 20px;
+      height: 20px;
+      opacity: 0.7;
+    }
+
+    /* 选择框样式 */
     .ios-select {
       width: 100%;
-      padding: 12px 16px;
-      border: 1px solid var(--ios-border);
-      border-radius: 10px;
-      font-size: 17px;
-      background-color: #FFFFFF;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 16px;
+      background: var(--extra-light-gray);
       -webkit-appearance: none;
       appearance: none;
-      color: var(--ios-text-primary);
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      color: var(--text-primary);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%233366CC' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 16px center;
       background-size: 12px;
       cursor: pointer;
+      transition: all 0.2s ease;
+      min-height: 50px;
     }
 
     .ios-select:focus {
       outline: none;
-      border-color: var(--ios-blue);
-      box-shadow: 0 0 0 1px var(--ios-blue);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(51, 102, 204, 0.15);
     }
 
+    .ios-select:hover {
+      border-color: var(--primary);
+    }
+
+    /* 按钮样式 */
     .ios-button {
-      background: var(--ios-blue);
+      background: var(--primary);
       color: white;
       border: none;
-      padding: 14px;
+      padding: 14px 20px;
       width: 100%;
-      border-radius: 10px;
-      font-size: 17px;
+      border-radius: 8px;
+      font-size: 16px;
       font-weight: 600;
       cursor: pointer;
-      margin-top: 12px;
-      transition: background-color 0.2s, transform 0.1s;
+      margin-top: 20px;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 4px rgba(51, 102, 204, 0.2);
+      position: relative;
+      overflow: hidden;
+      min-height: 50px;
+    }
+
+    .ios-button:hover {
+      background: #2957B3;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(51, 102, 204, 0.25);
     }
 
     .ios-button:active {
-      opacity: 0.9;
       transform: scale(0.98);
     }
 
-    .ios-result {
-      display: none; /* 默认隐藏 */
-      padding-top: 24px;
-      border-top: 1px solid var(--ios-border);
-      margin-top: 32px;
+    .ios-button.loading {
+      pointer-events: none;
     }
 
+    .ios-button.loading::after {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      top: 50%;
+      left: 50%;
+      margin-left: -10px;
+      margin-top: -10px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 0.8s linear infinite;
+    }
+
+    .ios-button.loading span {
+      visibility: hidden;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* 结果区域样式 */
+    .ios-result {
+      display: none;
+      padding: 24px;
+      margin-top: 28px;
+      border-radius: 12px;
+      background: var(--extra-light-gray);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      animation: resultSlideIn 0.5s ease forwards;
+    }
+
+    @keyframes resultSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* 建议区域样式 */
     .ios-suggestion {
-      margin-top: 16px;
-      padding: 20px; /* 优化：增加内边距，提供呼吸感 */
-      background: rgba(0, 122, 255, 0.06);
-      border-radius: 14px;
-      white-space: pre-line; /* 保持换行 */
+      padding: 20px;
+      background: rgba(51, 102, 204, 0.05);
+      border-radius: 8px;
+      border: 1px solid rgba(51, 102, 204, 0.1);
+      white-space: pre-line;
+      margin-bottom: 20px;
     }
 
     .ios-suggestion-title {
       font-weight: 600;
-      margin-bottom: 12px;
-      color: var(--ios-blue);
-      font-size: 17px;
+      margin-bottom: 16px;
+      color: var(--primary);
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    /* 优化：为结果文本创建独立的样式规则 */
+    .ios-suggestion-title::before {
+      content: "🎯";
+      font-size: 18px;
+    }
+
     .ios-suggestion p {
-      margin: 0; /* 清除 p 标签的默认外边距 */
-      font-size: 16px; /* 略微缩小字号，与标题形成对比 */
-      color: var(--ios-text-secondary); /* 使用次级文本颜色，保持一致性 */
-      line-height: 1.6;
+      margin: 0;
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      font-weight: 400;
+    }
+
+    /* 图表容器样式 */
+    .chart-container {
+      background: var(--extra-light-gray);
+      border-radius: 8px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      margin-top: 20px;
     }
 
     .chart-note {
       font-size: 14px;
       text-align: center;
-      color: var(--ios-text-tertiary);
+      color: var(--text-tertiary);
       margin-top: 16px;
+      font-weight: 400;
+      line-height: 1.5;
     }
 
     canvas {
-      margin-top: 24px;
+      margin-top: 16px;
+      border-radius: 8px;
     }
 
-    .link{
-      display: block;
+    /* 链接样式 */
+    .link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
       width: 100%;
       text-align: center;
-      margin-top: 20px;
-      color: #0A84FF;
+      margin-top: 24px;
+      padding: 14px 16px;
+      color: var(--primary);
+      text-decoration: none;
+      background: rgba(51, 102, 204, 0.05);
+      border-radius: 8px;
+      border: 1px solid rgba(51, 102, 204, 0.1);
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .link:hover {
+      background: rgba(51, 102, 204, 0.08);
+      transform: translateY(-1px);
+    }
+
+    .link::after {
+      content: "→";
+      font-size: 16px;
+      font-weight: bold;
+    }
+    
+    /* 响应式设计 */
+    @media (max-width: 480px) {
+      body {
+        padding: 12px;
+      }
+      
+      .ios-card {
+        padding: 20px 16px;
+      }
+      
+      .ios-title {
+        font-size: 24px;
+      }
+      
+      .ios-select {
+        padding: 12px 14px;
+        font-size: 15px;
+      }
+      
+      .ios-button {
+        padding: 14px 16px;
+        font-size: 15px;
+      }
+      
+      .ios-suggestion {
+        padding: 16px;
+      }
+      
+      .chart-container {
+        padding: 12px;
+      }
+    }
+
+    /* 深色模式下的卡片样式 */
+    @media (prefers-color-scheme: dark) {
+      .ios-card {
+        background: var(--extra-light-gray);
+        border: 1px solid var(--border);
+      }
+      
+      .ios-select {
+        background: var(--extra-light-gray);
+        border-color: var(--border);
+      }
+      
+      .ios-result {
+        background: var(--extra-light-gray);
+        border: 1px solid var(--border);
+      }
+      
+      .chart-container {
+        background: var(--extra-light-gray);
+        border: 1px solid var(--border);
+      }
+    }
+
+    /* 无障碍支持 */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* 高对比度模式 */
+    @media (prefers-contrast: high) {
+      .ios-select {
+        border-width: 2px;
+      }
+      
+      .ios-button {
+        border: 2px solid var(--primary);
+      }
     }
   </style>
 </head>
-<body>
-<div class="ios-card">
-  <h1 class="ios-title">KDJ + RSI 智能分析</h1>
+<body class="loading">
+<main class="ios-card">
+  <header>
+    <h1 class="ios-title">KDJ + RSI 智能分析</h1>
+  </header>
 
-  <div class="ios-form-group">
-    <label for="j" class="ios-label">J 值 (短期强弱)</label>
-    <select id="j" class="ios-select">
-      <option value="">请选择 J 值</option>
-      <option value="-30">-30 (极度超卖)</option>
-      <option value="-20">-20 (极弱)</option>
-      <option value="-10">-10 (偏弱)</option>
-      <option value="0">0 (极低)</option>
-      <option value="10">10 (低位)</option>
-      <option value="20">20 (偏低)</option>
-      <option value="30">30 (中低)</option>
-      <option value="40">40 (中等)</option>
-      <option value="50">50 (中性)</option>
-      <option value="60">60 (略强)</option>
-      <option value="70">70 (偏高)</option>
-      <option value="80">80 (强势)</option>
-      <option value="90">90 (超买)</option>
-      <option value="100">100 (极强)</option>
-      <option value="110">110 (过热)</option>
-    </select>
-  </div>
+  <section class="analysis-form" role="form" aria-label="技术指标输入表单">
+    <div class="ios-form-group">
+      <label for="j" class="ios-label">
+        <svg class="ios-label-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+          <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+        </svg>
+        J 值 (短期强弱指标)
+      </label>
+      <select id="j" class="ios-select" aria-describedby="j-help">
+        <option value="">请选择 J 值</option>
+        <option value="-30">-30 (极度超卖)</option>
+        <option value="-20">-20 (极弱)</option>
+        <option value="-10">-10 (偏弱)</option>
+        <option value="0">0 (极低)</option>
+        <option value="10">10 (低位)</option>
+        <option value="20">20 (偏低)</option>
+        <option value="30">30 (中低)</option>
+        <option value="40">40 (中等)</option>
+        <option value="50">50 (中性)</option>
+        <option value="60">60 (略强)</option>
+        <option value="70">70 (偏高)</option>
+        <option value="80">80 (强势)</option>
+        <option value="90">90 (超买)</option>
+        <option value="100">100 (极强)</option>
+        <option value="110">110 (过热)</option>
+      </select>
+    </div>
 
-  <div class="ios-form-group">
-    <label for="rsi" class="ios-label">RSI 值 (买卖强度)</label>
-    <select id="rsi" class="ios-select">
-      <option value="">请选择 RSI 值</option>
-      <option value="-10">-10 (异常极弱)</option>
-      <option value="0">0 (极弱)</option>
-      <option value="10">10 (超卖)</option>
-      <option value="20">20 (偏弱)</option>
-      <option value="30">30 (低位)</option>
-      <option value="40">40 (中低)</option>
-      <option value="50">50 (中性)</option>
-      <option value="60">60 (中强)</option>
-      <option value="70">70 (偏强)</option>
-      <option value="80">80 (超买)</option>
-      <option value="90">90 (强势)</option>
-      <option value="100">100 (极强)</option>
-    </select>
-  </div>
+    <div class="ios-form-group">
+      <label for="rsi" class="ios-label">
+        <svg class="ios-label-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+          <path fill-rule="evenodd" d="M2 9.5A3.5 3.5 0 005.5 13H9v2.586l-1.293-1.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 15.586V13h3.5a3.5 3.5 0 100-7H11V3.414l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 3.414V6H5.5A3.5 3.5 0 002 9.5z" clip-rule="evenodd"/>
+        </svg>
+        RSI 值 (相对强弱指数)
+      </label>
+      <select id="rsi" class="ios-select" aria-describedby="rsi-help">
+        <option value="">请选择 RSI 值</option>
+        <option value="-10">-10 (异常极弱)</option>
+        <option value="0">0 (极弱)</option>
+        <option value="10">10 (超卖)</option>
+        <option value="20">20 (偏弱)</option>
+        <option value="30">30 (低位)</option>
+        <option value="40">40 (中低)</option>
+        <option value="50">50 (中性)</option>
+        <option value="60">60 (中强)</option>
+        <option value="70">70 (偏强)</option>
+        <option value="80">80 (超买)</option>
+        <option value="90">90 (强势)</option>
+        <option value="100">100 (极强)</option>
+      </select>
+    </div>
 
-  <div class="ios-form-group">
-    <label for="volume" class="ios-label">成交量状态 (与均量对比)</label>
-    <select id="volume" class="ios-select">
-      <option value="">请选择成交量状态</option>
-      <option value="low">缩量 (&lt;0.7倍)</option>
-      <option value="normal">中性 (≈均量)</option>
-      <option value="high">放量 (&gt;1.5倍)</option>
-    </select>
-  </div>
+    <div class="ios-form-group">
+      <label for="volume" class="ios-label">
+        <svg class="ios-label-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        成交量状态 (与均量对比)
+      </label>
+      <select id="volume" class="ios-select" aria-describedby="volume-help">
+        <option value="">请选择成交量状态</option>
+        <option value="low">缩量 (&lt;0.7倍)</option>
+        <option value="normal">中性 (≈均量)</option>
+        <option value="high">放量 (&gt;1.5倍)</option>
+      </select>
+    </div>
 
-  <div class="ios-form-group">
-    <label for="cycle" class="ios-label">分析周期</label>
-    <select id="cycle" class="ios-select">
-      <option value="day">日K</option>
-      <option value="week">周K</option>
-      <option value="hour">小时K</option>
-    </select>
-  </div>
+    <div class="ios-form-group">
+      <label for="cycle" class="ios-label">
+        <svg class="ios-label-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+        </svg>
+        分析周期
+      </label>
+      <select id="cycle" class="ios-select" aria-describedby="cycle-help">
+        <option value="day">日K线 (日常分析)</option>
+        <option value="week">周K线 (中期趋势)</option>
+        <option value="hour">小时K线 (短线交易)</option>
+      </select>
+    </div>
 
-  <button class="ios-button" onclick="judgeSignal()">智能判断</button>
+    <button class="ios-button" id="analyze-btn" onclick="judgeSignal()" aria-label="开始智能分析">
+      <span>开始智能分析</span>
+    </button>
+  </section>
 
-  <div id="result-container" class="ios-result">
+  <section id="result-container" class="ios-result" role="region" aria-label="分析结果" aria-live="polite">
     <div class="ios-suggestion">
       <div class="ios-suggestion-title">智能分析结果</div>
       <p id="result-text"></p>
     </div>
-    <canvas id="previewChart" height="200"></canvas>
-    <p id="chart-note" class="chart-note">
-      图解：蓝线连接当前 RSI 和 J 值，反映指标相对位置。高位区风险大，低位区寻机会。
-    </p>
-  </div>
+    <div class="chart-container">
+      <canvas id="previewChart" width="400" height="200" aria-label="技术指标可视化图表"></canvas>
+      <p id="chart-note" class="chart-note">
+        📊 图表说明：蓝线连接当前 RSI 和 J 值，直观显示指标相对位置。高位区域需警惕风险，低位区域可寻找机会。
+      </p>
+    </div>
+  </section>
 
-<!--  跳转至2.0-->
-  <a href="./index_2.html" class="link">KDJ + RSI 智能分析2.0</a>
+  <nav>
+    <a href="./index_2.html" class="link" aria-label="升级到2.0版本">
+      KDJ + RSI 智能分析 2.0
+    </a>
+  </nav>
+</main>
 
-</div>
-
-<script>
-  function judgeSignal() {
-    const j = parseFloat(document.getElementById("j").value);
-    const rsi = parseFloat(document.getElementById("rsi").value);
-    const volume = document.getElementById("volume").value;
-    const cycle = document.getElementById("cycle").value;
-    const resultContainer = document.getElementById("result-container");
-    const resultTextBox = document.getElementById("result-text");
-
-    if (isNaN(j) || isNaN(rsi) /*|| !volume || !cycle*/) {
-      alert("⚠️ 请完整选择所有参数");
-      return;
-    }
-
-    let signal = "📊 当前市场暂无明显信号，建议耐心观察，不宜贸然操作。";
-
-    if (j <= 10 && rsi <= 30) {
-      signal = "📉 J值与RSI都处于低位，说明市场处在相对底部区域，可以关注逢低吸纳的机会。";
-    } else if (j >= 90 && rsi >= 70) {
-      signal = "📈 J值与RSI都在高位，市场短期或有见顶压力，建议逐步减仓或考虑止盈。";
-    } else if (j <= 30 && rsi < 50) {
-      signal = "📉 指标偏低，虽然尚未极端，但若配合成交量放大，可能出现反弹信号。";
-    } else if (j >= 70 && rsi > 50) {
-      signal = "📈 指标略偏高，若没有放量支持，需防范冲高回落。";
-    }
-
-    if (volume === "low" && j > 70 && rsi > 60) {
-      signal += "\n\n⚠️ 当前上涨但伴随缩量，说明动力不足，可能是诱多行情，建议谨慎追高。";
-    } else if (volume === "high" && j < 30 && rsi < 50) {
-      signal += "\n\n✅ 放量下跌后指标落入低位，市场可能在酝酿反转，值得关注进场机会。";
-    }
-
-    let cycleText = "\n当前周期：";
-    if (cycle === "week") cycleText += "周K (中期趋势参考，信号更具延续性)";
-    else if (cycle === "hour") cycleText += "小时K (短线信号参考，波动快)";
-    else cycleText += "日K (日常主参考，平衡波动与趋势)";
-
-    // 优化：使用两个换行符创建段落间距
-    resultTextBox.innerText = signal + "\n" + cycleText;
-
-    // 显示结果区域并渲染图表
-    resultContainer.style.display = 'block';
-    renderPreviewChart(j, rsi);
-  }
-
-  /**
-   * 渲染图表 (iOS 风格优化版)
-   */
-  function renderPreviewChart(j, rsi) {
-    const ctx = document.getElementById('previewChart').getContext('2d');
-    if (window._chartInstance) window._chartInstance.destroy();
-
-    // --- 从 CSS 变量中获取颜色和字体，确保风格统一 ---
-    const computedStyle = getComputedStyle(document.documentElement);
-    const iosBlue = computedStyle.getPropertyValue('--ios-blue').trim();
-    const iosTextPrimary = computedStyle.getPropertyValue('--ios-text-primary').trim();
-    const iosTextSecondary = computedStyle.getPropertyValue('--ios-text-secondary').trim();
-    const iosTextTertiary = computedStyle.getPropertyValue('--ios-text-tertiary').trim();
-    const iosBorder = computedStyle.getPropertyValue('--ios-border').trim();
-    const bodyFontFamily = computedStyle.fontFamily;
-
-    // --- 创建一个从上到下的蓝色渐变背景 ---
-    const gradient = ctx.createLinearGradient(0, 0, 0, 200);
-    gradient.addColorStop(0, 'rgba(0, 122, 255, 0.3)'); // 顶部颜色 (较浓)
-    gradient.addColorStop(1, 'rgba(0, 122, 255, 0)');   // 底部颜色 (透明)
-
-    window._chartInstance = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: ['RSI', 'J值'],
-        datasets: [{
-          label: '指标值',
-          data: [rsi, j],
-          fill: true,                  // 开启填充
-          backgroundColor: gradient,     // 应用渐变背景
-          borderColor: iosBlue,
-          borderWidth: 2.5,              // 线条加粗一点
-          tension: 0.4,
-          pointBackgroundColor: '#FFFFFF', // 数据点: 白色填充
-          pointBorderColor: iosBlue,     // 数据点: 蓝色边框
-          pointBorderWidth: 2,
-          pointRadius: 5,
-          pointHoverRadius: 7,
-          pointHoverBackgroundColor: '#FFFFFF',
-          pointHoverBorderColor: iosBlue,
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            enabled: true,
-            backgroundColor: 'rgba(249, 249, 249, 0.9)', // iOS 风格的毛玻璃背景
-            titleFont: { size: 14, weight: '600', family: bodyFontFamily },
-            titleColor: iosTextSecondary,
-            bodyFont: { size: 17, weight: 'bold', family: bodyFontFamily },
-            bodyColor: iosTextPrimary,
-            padding: 12,
-            cornerRadius: 10,
-            borderColor: iosBorder,
-            borderWidth: 1,
-            displayColors: false, // 隐藏颜色小方块
-            callbacks: {
-              title: (tooltipItems) => tooltipItems[0].label,
-              label: (context) => `值为: ${context.parsed.y}`
-            }
-          }
-        },
-        scales: {
-          y: {
-            min: -40,
-            max: 120,
-            ticks: {
-              stepSize: 20,
-              color: iosTextTertiary,
-              font: { family: bodyFontFamily, size: 12 }
-            },
-            grid: {
-              color: iosBorder,
-              border: {
-                dash: [4, 4] // 将网格线变为虚线
-              }
-            }
-          },
-          x: {
-            ticks: {
-              color: iosTextSecondary,
-              font: { family: bodyFontFamily, size: 14, weight: '500' }
-            },
-            grid: { display: false },
-            border: { display: false } // 隐藏X轴本身那条线，更简洁
-          }
-        }
-      }
-    });
-  }
-
-  // 隐藏微信分享菜单
-  function hideWeChatShareMenu() {
-    if (typeof WeixinJSBridge === "undefined") {
-      if (document.addEventListener) {
-        document.addEventListener('WeixinJSBridgeReady', onWeixinJSBridgeReady, false);
-      } else if (document.attachEvent) {
-        document.attachEvent('WeixinJSBridgeReady', onWeixinJSBridgeReady);
-      }
-    } else {
-      onWeixinJSBridgeReady();
-    }
-
-    // 处理 WeixinJSBridgeReady 事件，隐藏分享菜单
-    function onWeixinJSBridgeReady() {
-      // 调用 WeixinJSBridge 接口隐藏菜单项
-      WeixinJSBridge.invoke('menu:setMainMenu', {
-        'menuList': [
-          'menuItem:share:appMessage',  // 分享给朋友
-          'menuItem:share:timeline',    // 分享到朋友圈
-          'menuItem:share:weiboApp',    // 分享到微博
-          'menuItem:favorite',          // 收藏
-          'menuItem:share:qzone'        // 分享到 QQ 空间
-        ]
-      }, function(res) {
-        if (res.err_msg === "menu:setMainMenu:ok") {
-          console.log("分享菜单已被隐藏");
-        }
-      });
-    }
-  }
-
-  hideWeChatShareMenu();
-
-</script>
+<script src="script.js"></script>
 </body>
 </html>
