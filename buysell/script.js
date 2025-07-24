@@ -340,4 +340,28 @@
     // 全局函数（保持向后兼容）
     window.calculateProfit = calculateProfit;
 
+// ====== 主题切换功能 ======
+    document.addEventListener('DOMContentLoaded', function() {
+        var toggle = document.getElementById('theme-toggle');
+        var emoji = document.getElementById('theme-emoji');
+        if (!toggle || !emoji) return;
+        var darkClass = 'dark-mode';
+        function setTheme(dark) {
+            if (dark) {
+                document.documentElement.classList.add(darkClass);
+                emoji.textContent = '🌑'; // 新月
+            } else {
+                document.documentElement.classList.remove(darkClass);
+                emoji.textContent = '🌞';
+            }
+        }
+        // 修正初始逻辑：light 显示🌞，dark 显示🌑
+        var isDark = localStorage.getItem('theme') === 'dark';
+        setTheme(isDark);
+        toggle.onclick = function() {
+            isDark = !isDark;
+            setTheme(isDark);
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        };
+    });
 })();

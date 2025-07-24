@@ -392,7 +392,7 @@ body.loading {
     }
     
     .ios-result-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
         gap: 10px;
     }
     
@@ -467,4 +467,18 @@ body.loading {
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
     }
+}
+
+.dark-mode {
+  --ios-background: #18181a !important;
+  --ios-background-secondary: #232326 !important;
+  --ios-text-primary: #fff !important;
+  --ios-text-secondary: #bdbdc0 !important;
+  --ios-text-tertiary: #888 !important;
+  --ios-border: #333 !important;
+  --ios-blue: #3399ff !important;
+  --ios-shadow: 0 4px 16px rgba(0,0,0,0.4) !important;
+}
+body.dark-mode {
+  background: var(--ios-background) !important;
 }
