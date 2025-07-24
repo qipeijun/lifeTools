@@ -1,0 +1,470 @@
+/* iOS 18 简洁设计系统 */
+:root {
+    /* 核心颜色 */
+    --ios-blue: #007AFF;
+    --ios-red: #FF3B30;
+    --ios-green: #34C759;
+    --ios-gray: #8E8E93;
+    
+    /* 背景色 */
+    --ios-background: #F2F2F7;
+    --ios-background-secondary: #FFFFFF;
+    
+    /* 文字颜色 */
+    --ios-text-primary: #000000;
+    --ios-text-secondary: #3C3C43;
+    --ios-text-tertiary: #8E8E93;
+    
+    /* 边框和分隔线 */
+    --ios-border: rgba(60, 60, 67, 0.2);
+    --ios-separator: rgba(60, 60, 67, 0.1);
+    
+    /* 阴影 */
+    --ios-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    --ios-shadow-light: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+* {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, sans-serif;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    background: var(--ios-background);
+    font-size: 17px;
+    color: var(--ios-text-primary);
+    line-height: 1.47;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    transition: opacity 0.3s ease;
+}
+
+/* 页面加载动画 */
+body.loading {
+    opacity: 0;
+}
+
+.ios-card {
+    background: var(--ios-background-secondary);
+    border-radius: 20px;
+    padding: 32px 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--ios-shadow);
+    border: 1px solid var(--ios-separator);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ios-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.ios-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--ios-text-primary);
+    text-align: center;
+    margin-bottom: 32px;
+    letter-spacing: -0.03em;
+    position: relative;
+}
+
+.ios-title::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: var(--ios-blue);
+    border-radius: 2px;
+}
+
+.ios-form-group {
+    margin-bottom: 24px;
+    position: relative;
+    animation: slideInUp 0.4s ease forwards;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.ios-form-group:nth-child(2) { animation-delay: 0.1s; }
+.ios-form-group:nth-child(3) { animation-delay: 0.2s; }
+.ios-form-group:nth-child(4) { animation-delay: 0.3s; }
+.ios-form-group:nth-child(5) { animation-delay: 0.4s; }
+
+@keyframes slideInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.ios-label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: var(--ios-text-secondary);
+    font-size: 16px;
+    gap: 8px;
+}
+
+.ios-label-icon {
+    width: 20px;
+    height: 20px;
+    opacity: 0.7;
+}
+
+.ios-input {
+    width: 100%;
+    padding: 16px 20px;
+    border: 1px solid var(--ios-border);
+    border-radius: 16px;
+    font-size: 17px;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--ios-text-primary);
+    transition: all 0.3s ease;
+    min-height: 56px;
+}
+
+.ios-input:focus {
+    outline: none;
+    border-color: var(--ios-blue);
+    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+    transform: translateY(-1px);
+    background: rgba(255, 255, 255, 1);
+}
+
+.ios-input::placeholder {
+    color: var(--ios-text-tertiary);
+    opacity: 0.8;
+}
+
+/* 错误状态样式 */
+.ios-input.error {
+    border-color: var(--ios-red);
+    border-width: 2px;
+    box-shadow: 0 0 0 4px rgba(255, 59, 48, 0.1);
+    animation: shake 0.4s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    50% { transform: translateX(4px); }
+    75% { transform: translateX(-4px); }
+}
+
+.ios-button {
+    background: var(--ios-blue);
+    color: white;
+    border: none;
+    padding: 18px 24px;
+    width: 100%;
+    border-radius: 16px;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 24px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(0, 122, 255, 0.2);
+    position: relative;
+    overflow: hidden;
+    min-height: 56px;
+}
+
+.ios-button:hover {
+    background: #0056CC;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 122, 255, 0.3);
+}
+
+.ios-button:active {
+    transform: scale(0.98) translateY(0);
+}
+
+.ios-button.loading {
+    pointer-events: none;
+}
+
+.ios-button.loading::after {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 0.8s linear infinite;
+}
+
+.ios-button.loading span {
+    visibility: hidden;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.ios-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 0 4px 16px rgba(0, 122, 255, 0.2);
+}
+
+/* 结果展示区域 - 整体card */
+.ios-result {
+    display: none;
+    margin-top: 24px;
+    background: var(--ios-background-secondary);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: var(--ios-shadow);
+    border: 1px solid var(--ios-separator);
+    animation: resultSlideIn 0.4s ease forwards;
+}
+
+@keyframes resultSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.ios-result-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ios-text-primary);
+    margin-bottom: 20px;
+    text-align: center;
+    letter-spacing: -0.01em;
+}
+
+/* 结果分组 */
+.ios-result-section {
+    margin-bottom: 20px;
+}
+
+.ios-result-section:last-child {
+    margin-bottom: 0;
+}
+
+.ios-result-section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ios-text-primary);
+    margin-bottom: 12px;
+    padding-left: 4px;
+    letter-spacing: -0.01em;
+}
+
+/* 盈亏结果网格 */
+.ios-result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.ios-result-item {
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 12px;
+    padding: 18px 16px;
+    text-align: center;
+}
+
+.ios-result-item-label {
+    font-size: 13px;
+    color: var(--ios-text-tertiary);
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.ios-result-item-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--ios-text-primary);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+}
+
+/* 主要数值（盈亏金额）突出显示 */
+.ios-result-item-value.main-value {
+    font-size: 24px;
+    font-weight: 800;
+}
+
+/* 盈亏金额的主要样式 */
+.ios-result-main-value {
+    font-size: 24px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+}
+
+/* 成本详情列表 */
+.ios-result-details {
+    background: rgba(0, 0, 0, 0.01);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(60, 60, 67, 0.03);
+}
+
+.ios-result-detail {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(60, 60, 67, 0.03);
+}
+
+.ios-result-detail:last-child {
+    border-bottom: none;
+}
+
+.ios-result-detail-label {
+    font-size: 15px;
+    color: var(--ios-text-secondary);
+    font-weight: 500;
+}
+
+.ios-result-detail-value {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ios-text-primary);
+    font-variant-numeric: tabular-nums;
+}
+
+/* 动态颜色系统 */
+.profit {
+    color: var(--ios-red);
+}
+
+.loss {
+    color: var(--ios-green);
+}
+
+.neutral {
+    color: var(--ios-text-secondary);
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+    body {
+        padding: 16px;
+    }
+    
+    .ios-card {
+        padding: 24px 20px;
+    }
+    
+    .ios-title {
+        font-size: 24px;
+        margin-bottom: 24px;
+    }
+    
+    .ios-result {
+        padding: 20px;
+    }
+    
+    .ios-result-section {
+        margin-bottom: 16px;
+    }
+    
+    .ios-result-section-title {
+        font-size: 15px;
+        margin-bottom: 10px;
+    }
+    
+    .ios-result-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .ios-result-item {
+        padding: 16px 14px;
+    }
+    
+    .ios-result-item-value {
+        font-size: 18px;
+    }
+    
+    .ios-result-item-value.main-value {
+        font-size: 22px;
+    }
+    
+    .ios-result-detail {
+        padding: 12px 14px;
+    }
+}
+
+/* 深色模式支持 */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --ios-background: #000000;
+        --ios-background-secondary: #1C1C1E;
+        --ios-text-primary: #FFFFFF;
+        --ios-text-secondary: #EBEBF5;
+        --ios-text-tertiary: #AEAEB2;
+        --ios-border: rgba(84, 84, 88, 0.8);
+        --ios-separator: rgba(84, 84, 88, 0.4);
+    }
+    
+    body {
+        background: #000000;
+    }
+    
+    .ios-input {
+        background: rgba(28, 28, 30, 0.9);
+        border-color: rgba(84, 84, 88, 0.8);
+        color: var(--ios-text-primary);
+    }
+    
+    .ios-input:focus {
+        background: rgba(28, 28, 30, 1);
+        border-color: var(--ios-blue);
+        color: var(--ios-text-primary);
+    }
+    
+    .ios-input::placeholder {
+        color: var(--ios-text-tertiary);
+        opacity: 0.8;
+    }
+    
+    .ios-result-item {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .ios-result-details {
+        background: rgba(255, 255, 255, 0.02);
+        border-color: rgba(84, 84, 88, 0.1);
+    }
+    
+    .ios-result-detail {
+        border-bottom-color: rgba(84, 84, 88, 0.1);
+    }
+}
+
+/* 无障碍支持 */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

@@ -4,829 +4,96 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>股票做T利润计算器</title>
-    <style>
-        /* --- 核心 iOS 风格 --- */
-        :root {
-            --ios-blue: #007AFF;
-            --ios-red: #FF3B30;
-            --ios-green: #34C759;
-            --ios-orange: #FF9500;
-            --ios-gray: #8E8E93;
-            --ios-light-gray: #F2F2F7;
-            --ios-extra-light-gray: #F9F9F9;
-            --ios-border: rgba(60, 60, 67, 0.1);
-            --ios-text-primary: #111111;
-            --ios-text-secondary: #3a3a3c;
-            --ios-text-tertiary: #6e6e73;
-            --ios-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-            --ios-shadow-light: 0 2px 8px rgba(0, 0, 0, 0.04);
-        }
-
-        * {
-            -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, sans-serif;
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 16px;
-            background: linear-gradient(135deg, var(--ios-light-gray) 0%, #E8E8ED 100%);
-            font-size: 17px;
-            color: var(--ios-text-primary);
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
-            min-height: 100vh;
-            transition: opacity 0.3s ease;
-        }
-
-        /* 页面加载动画 */
-        body.loading {
-            opacity: 0;
-        }
-
-        .ios-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 32px 24px;
-            margin-bottom: 20px;
-            box-shadow: var(--ios-shadow);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .ios-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-        }
-
-        .ios-title {
-            font-size: 32px;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--ios-blue), var(--ios-green));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-align: center;
-            margin-bottom: 32px;
-            letter-spacing: -0.03em;
-            position: relative;
-        }
-
-        .ios-title::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 3px;
-            background: linear-gradient(135deg, var(--ios-blue), var(--ios-green));
-            border-radius: 2px;
-        }
-
-        .ios-form-group {
-            margin-bottom: 24px;
-            position: relative;
-            animation: slideInUp 0.4s ease forwards;
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        .ios-form-group:nth-child(2) { animation-delay: 0.1s; }
-        .ios-form-group:nth-child(3) { animation-delay: 0.2s; }
-        .ios-form-group:nth-child(4) { animation-delay: 0.3s; }
-        .ios-form-group:nth-child(5) { animation-delay: 0.4s; }
-
-        @keyframes slideInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .ios-label {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            font-weight: 600;
-            color: var(--ios-text-secondary);
-            font-size: 16px;
-            gap: 8px;
-        }
-
-        .ios-label-icon {
-            width: 20px;
-            height: 20px;
-            opacity: 0.7;
-        }
-
-        .ios-input {
-            width: 100%;
-            padding: 16px 20px;
-            border: 2px solid var(--ios-border);
-            border-radius: 16px;
-            font-size: 18px;
-            background: rgba(255, 255, 255, 0.8);
-            color: var(--ios-text-primary);
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            min-height: 56px;
-        }
-
-        .ios-input:focus {
-            outline: none;
-            border-color: var(--ios-blue);
-            box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15);
-            transform: translateY(-2px);
-            background: rgba(255, 255, 255, 0.95);
-        }
-
-        .ios-input::placeholder {
-            color: var(--ios-text-tertiary);
-            opacity: 0.7;
-        }
-
-        /* 错误状态样式 - 仅通过红色边框指示，不显示文字提示 */
-        .ios-input.error {
-            border-color: var(--ios-red);
-            border-width: 3px;
-            box-shadow: 0 0 0 4px rgba(255, 59, 48, 0.15);
-            animation: shake 0.4s ease-in-out;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            50% { transform: translateX(5px); }
-            75% { transform: translateX(-5px); }
-        }
-
-        .ios-button {
-            background: linear-gradient(135deg, var(--ios-blue), #0056CC);
-            color: white;
-            border: none;
-            padding: 18px 24px;
-            width: 100%;
-            border-radius: 16px;
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 16px rgba(0, 122, 255, 0.3);
-            position: relative;
-            overflow: hidden;
-            min-height: 56px;
-        }
-
-        .ios-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0, 122, 255, 0.4);
-        }
-
-        .ios-button:active {
-            transform: scale(0.98) translateY(0);
-        }
-
-        .ios-button.loading {
-            pointer-events: none;
-        }
-
-        .ios-button.loading::after {
-            content: "";
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            top: 50%;
-            left: 50%;
-            margin-left: -10px;
-            margin-top: -10px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 0.8s linear infinite;
-        }
-
-        .ios-button.loading span {
-            visibility: hidden;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .ios-result {
-            display: none;
-            padding: 24px;
-            margin-top: 28px;
-            border-radius: 20px;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: var(--ios-shadow);
-            animation: resultSlideIn 0.5s ease forwards;
-        }
-
-        @keyframes resultSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .ios-result-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .ios-result-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--ios-text-secondary);
-            margin-bottom: 4px;
-        }
-
-        .ios-result-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            text-align: center;
-        }
-
-        .ios-result-item {
-            padding: 20px 16px;
-            background: rgba(255, 255, 255, 0.6);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            transition: transform 0.2s ease;
-        }
-
-        .ios-result-item:hover {
-            transform: translateY(-2px);
-        }
-
-        .ios-result-label {
-            font-size: 14px;
-            color: var(--ios-text-tertiary);
-            margin-bottom: 8px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .ios-result-value {
-            font-weight: 700;
-            font-size: 24px;
-            line-height: 1.2;
-        }
-
-        #profit-amount {
-            font-size: 28px;
-        }
-
-        #profit-percentage {
-            font-size: 20px;
-        }
-
-        .profit {
-            color: var(--ios-red);
-            text-shadow: 0 1px 2px rgba(255, 59, 48, 0.2);
-        }
-
-        .loss {
-            color: var(--ios-green);
-            text-shadow: 0 1px 2px rgba(52, 199, 89, 0.2);
-        }
-
-        /* 用户引导提示 */
-        .ios-tip {
-            background: linear-gradient(135deg, rgba(255, 149, 0, 0.1), rgba(255, 149, 0, 0.05));
-            border: 1px solid rgba(255, 149, 0, 0.2);
-            border-radius: 16px;
-            padding: 16px 20px;
-            margin-bottom: 24px;
-            color: var(--ios-text-secondary);
-            font-size: 15px;
-            line-height: 1.4;
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-        }
-
-        .ios-tip-icon {
-            width: 20px;
-            height: 20px;
-            color: var(--ios-orange);
-            flex-shrink: 0;
-            margin-top: 1px;
-        }
-
-        /* 响应式设计 */
-        @media (max-width: 480px) {
-            body {
-                padding: 12px;
-            }
-            
-            .ios-card {
-                padding: 24px 20px;
-            }
-            
-            .ios-title {
-                font-size: 28px;
-            }
-            
-            .ios-input {
-                padding: 14px 16px;
-                font-size: 17px;
-            }
-            
-            .ios-button {
-                padding: 16px 20px;
-                font-size: 17px;
-            }
-            
-            .ios-result-grid {
-                gap: 16px;
-            }
-            
-            .ios-result-item {
-                padding: 16px 12px;
-            }
-            
-            #profit-amount {
-                font-size: 24px;
-            }
-            
-            #profit-percentage {
-                font-size: 18px;
-            }
-        }
-
-        /* 深色模式支持 */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --ios-text-primary: #FFFFFF;
-                --ios-text-secondary: #E5E5E7;
-                --ios-text-tertiary: #A1A1A6;
-                --ios-light-gray: #1C1C1E;
-                --ios-extra-light-gray: #2C2C2E;
-                --ios-border: rgba(84, 84, 88, 0.6);
-            }
-            
-            body {
-                background: linear-gradient(135deg, #1C1C1E 0%, #2C2C2E 100%);
-            }
-            
-            .ios-card {
-                background: rgba(44, 44, 46, 0.95);
-                border: 1px solid rgba(84, 84, 88, 0.3);
-            }
-            
-            .ios-input {
-                background: rgba(44, 44, 46, 0.8);
-                border-color: rgba(84, 84, 88, 0.4);
-            }
-            
-            .ios-input:focus {
-                background: rgba(44, 44, 46, 0.95);
-            }
-            
-            .ios-result {
-                background: linear-gradient(135deg, rgba(44, 44, 46, 0.9), rgba(44, 44, 46, 0.7));
-                border: 1px solid rgba(84, 84, 88, 0.3);
-            }
-            
-            .ios-result-item {
-                background: rgba(58, 58, 60, 0.6);
-                border: 1px solid rgba(84, 84, 88, 0.4);
-            }
-        }
-
-        /* 无障碍支持 */
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
-
-        /* 高对比度模式 */
-        @media (prefers-contrast: high) {
-            .ios-input {
-                border-width: 3px;
-            }
-            
-            .ios-input.error {
-                border-width: 4px;
-            }
-            
-            .ios-button {
-                border: 2px solid var(--ios-blue);
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body class="loading">
-<div class="ios-card">
-    <h1 class="ios-title">做 T 利润计算器</h1>
+    <div class="ios-card">
+        <h1 class="ios-title">做 T 利润计算器</h1>
 
-    <div class="ios-form-group">
-        <label for="buyPrice" class="ios-label">
-            <svg class="ios-label-icon" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
-            </svg>
-            买入价格
-        </label>
-        <input type="number" id="buyPrice" class="ios-input" placeholder="输入成本价格" inputmode="decimal" step="0.01" aria-label="买入价格">
-    </div>
+        <div class="ios-form-group">
+            <label for="buyPrice" class="ios-label">
+                <svg class="ios-label-icon" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
+                </svg>
+                买入价格
+            </label>
+            <input type="text" id="buyPrice" class="ios-input" placeholder="输入成本价格" inputmode="decimal">
+        </div>
 
-    <div class="ios-form-group">
-        <label for="sellPrice" class="ios-label">
-            <svg class="ios-label-icon" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
-            </svg>
-            卖出价格
-        </label>
-        <input type="number" id="sellPrice" class="ios-input" placeholder="输入卖出价格" inputmode="decimal" step="0.01" aria-label="卖出价格">
-    </div>
+        <div class="ios-form-group">
+            <label for="sellPrice" class="ios-label">
+                <svg class="ios-label-icon" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                </svg>
+                卖出价格
+            </label>
+            <input type="text" id="sellPrice" class="ios-input" placeholder="输入卖出价格" inputmode="decimal">
+        </div>
 
-    <div class="ios-form-group">
-        <label for="quantity" class="ios-label">
-            <svg class="ios-label-icon" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/>
-            </svg>
-            交易数量
-        </label>
-        <input type="number" id="quantity" class="ios-input" placeholder="输入交易股数" inputmode="numeric" step="100" aria-label="交易数量">
-    </div>
+        <div class="ios-form-group">
+            <label for="quantity" class="ios-label">
+                <svg class="ios-label-icon" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/>
+                </svg>
+                交易数量
+            </label>
+            <input type="number" id="quantity" class="ios-input" placeholder="输入交易股数" inputmode="numeric" step="100">
+        </div>
 
-    <div class="ios-form-group">
-        <label for="commission" class="ios-label">
-            <svg class="ios-label-icon" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
-            </svg>
-            手续费 (可选)
-        </label>
-        <input type="number" id="commission" class="ios-input" placeholder="输入交易手续费，不填默认为0" inputmode="decimal" step="0.01" aria-label="手续费">
-    </div>
+        <div class="ios-form-group">
+            <label for="commission" class="ios-label">
+                <svg class="ios-label-icon" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                </svg>
+                手续费 (可选)
+            </label>
+            <input type="text" id="commission" class="ios-input" placeholder="输入交易手续费，不填默认为0" inputmode="decimal">
+        </div>
 
-    <button class="ios-button" id="calculate-btn" onclick="calculateProfit()" aria-label="计算交易利润">
-        <span>计算利润</span>
-    </button>
+        <button class="ios-button" id="calculate-btn" onclick="calculateProfit()">
+            <span>计算利润</span>
+        </button>
 
-    <div id="result-container" class="ios-result" role="region" aria-label="计算结果">
-        <div class="ios-result-header">
+        <div id="result-container" class="ios-result">
             <div class="ios-result-title">交易结果</div>
-        </div>
-        <div class="ios-result-grid">
-            <div class="ios-result-item">
-                <div class="ios-result-label">盈亏金额</div>
-                <div id="profit-amount" class="ios-result-value" aria-label="盈亏金额">0.00</div>
+            
+            <!-- 盈亏结果组 -->
+            <div class="ios-result-section">
+                <div class="ios-result-section-title">盈亏情况</div>
+                <div class="ios-result-grid">
+                    <div class="ios-result-item">
+                        <div class="ios-result-item-label">盈亏金额</div>
+                        <div id="profit-amount" class="ios-result-item-value main-value">0.00</div>
+                    </div>
+                    <div class="ios-result-item">
+                        <div class="ios-result-item-label">收益率</div>
+                        <div id="profit-percentage" class="ios-result-item-value">0.00%</div>
+                    </div>
+                </div>
             </div>
-            <div class="ios-result-item">
-                <div class="ios-result-label">收益率</div>
-                <div id="profit-percentage" class="ios-result-value" aria-label="收益率">0.00%</div>
+
+            <!-- 成本详情组 -->
+            <div class="ios-result-section">
+                <div class="ios-result-section-title">成本详情</div>
+                <div class="ios-result-details">
+                    <div class="ios-result-detail">
+                        <div class="ios-result-detail-label">买入成本</div>
+                        <div id="buy-cost" class="ios-result-detail-value">0.00</div>
+                    </div>
+                    <div class="ios-result-detail">
+                        <div class="ios-result-detail-label">卖出收入</div>
+                        <div id="sell-income" class="ios-result-detail-value">0.00</div>
+                    </div>
+                    <div class="ios-result-detail">
+                        <div class="ios-result-detail-label">手续费</div>
+                        <div id="commission-display" class="ios-result-detail-value">0.00</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-    // 缓存键名
-    const CACHE_KEYS = {
-        BUY_PRICE: 'buysell_buyPrice',
-        SELL_PRICE: 'buysell_sellPrice',
-        QUANTITY: 'buysell_quantity',
-        COMMISSION: 'buysell_commission'
-    };
-
-    // 页面加载完成处理
-    window.addEventListener('DOMContentLoaded', function() {
-        // 页面加载动画
-        setTimeout(() => {
-            document.body.classList.remove('loading');
-        }, 300);
-        
-        loadFromCache();
-        initializeInputHandlers();
-        
-        // 添加触觉反馈支持
-        if ('vibrate' in navigator) {
-            console.log('设备支持触觉反馈');
-        }
-    });
-
-    // 初始化输入框处理器
-    function initializeInputHandlers() {
-        const inputs = ['buyPrice', 'sellPrice', 'quantity', 'commission'];
-        
-        inputs.forEach(id => {
-            const input = document.getElementById(id);
-            
-            // 自动保存功能
-            input.addEventListener('input', saveToCache);
-            input.addEventListener('change', saveToCache);
-            
-            // 实时验证
-            input.addEventListener('blur', () => validateInput(id));
-            
-            // 清除错误状态
-            input.addEventListener('focus', () => clearInputError(id));
-            
-            // 回车键快速计算
-            input.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    calculateProfit();
-                }
-            });
-        });
-    }
-
-    // 输入验证 - 仅通过边框颜色指示错误
-    function validateInput(inputId) {
-        const input = document.getElementById(inputId);
-        const value = parseFloat(input.value);
-        let hasError = false;
-
-        if (input.value.trim() === '') {
-            if (inputId !== 'commission') {
-                hasError = true;
-            }
-        } else if (isNaN(value)) {
-            hasError = true;
-        } else if (value < 0) {
-            hasError = true;
-        } else if (inputId === 'quantity' && value % 1 !== 0) {
-            hasError = true;
-        }
-
-        if (hasError) {
-            showInputError(inputId);
-        } else {
-            clearInputError(inputId);
-        }
-    }
-
-    // 显示输入错误 - 仅通过红色边框指示
-    function showInputError(inputId) {
-        const input = document.getElementById(inputId);
-        input.classList.add('error');
-        
-        // 触觉反馈
-        if (navigator.vibrate) {
-            navigator.vibrate(100);
-        }
-    }
-
-    // 清除输入错误
-    function clearInputError(inputId) {
-        const input = document.getElementById(inputId);
-        input.classList.remove('error');
-    }
-
-    // 保存数据到缓存
-    function saveToCache() {
-        try {
-            const buyPrice = document.getElementById("buyPrice").value;
-            const sellPrice = document.getElementById("sellPrice").value;
-            const quantity = document.getElementById("quantity").value;
-            const commission = document.getElementById("commission").value;
-
-            localStorage.setItem(CACHE_KEYS.BUY_PRICE, buyPrice);
-            localStorage.setItem(CACHE_KEYS.SELL_PRICE, sellPrice);
-            localStorage.setItem(CACHE_KEYS.QUANTITY, quantity);
-            localStorage.setItem(CACHE_KEYS.COMMISSION, commission);
-        } catch (e) {
-            console.warn('无法保存到本地存储:', e);
-        }
-    }
-
-    // 从缓存加载数据
-    function loadFromCache() {
-        try {
-            const buyPrice = localStorage.getItem(CACHE_KEYS.BUY_PRICE) || '';
-            const sellPrice = localStorage.getItem(CACHE_KEYS.SELL_PRICE) || '';
-            const quantity = localStorage.getItem(CACHE_KEYS.QUANTITY) || '';
-            const commission = localStorage.getItem(CACHE_KEYS.COMMISSION) || '';
-
-            document.getElementById("buyPrice").value = buyPrice;
-            document.getElementById("sellPrice").value = sellPrice;
-            document.getElementById("quantity").value = quantity;
-            document.getElementById("commission").value = commission;
-
-            // 如果缓存数据完整且合法，自动计算结果
-            if (buyPrice && sellPrice && quantity) {
-                const buyPriceNum = parseFloat(buyPrice);
-                const sellPriceNum = parseFloat(sellPrice);
-                const quantityNum = parseInt(quantity);
-                
-                if (!isNaN(buyPriceNum) && !isNaN(sellPriceNum) && !isNaN(quantityNum) &&
-                    buyPriceNum > 0 && sellPriceNum > 0 && quantityNum > 0) {
-                    setTimeout(() => {
-                        calculateProfit();
-                    }, 500);
-                }
-            }
-        } catch (e) {
-            console.warn('无法从本地存储加载数据:', e);
-        }
-    }
-
-    // 计算利润主函数
-    function calculateProfit() {
-        // 清除所有错误提示
-        clearAllErrors();
-        
-        // 获取输入值
-        const buyPrice = parseFloat(document.getElementById("buyPrice").value);
-        const sellPrice = parseFloat(document.getElementById("sellPrice").value);
-        const quantity = parseInt(document.getElementById("quantity").value);
-        let commission = parseFloat(document.getElementById("commission").value);
-
-        // 验证输入 - 仅通过红色边框指示错误
-        let hasError = false;
-        
-        if (!document.getElementById("buyPrice").value.trim()) {
-            showInputError('buyPrice');
-            hasError = true;
-        } else if (isNaN(buyPrice) || buyPrice <= 0) {
-            showInputError('buyPrice');
-            hasError = true;
-        }
-
-        if (!document.getElementById("sellPrice").value.trim()) {
-            showInputError('sellPrice');
-            hasError = true;
-        } else if (isNaN(sellPrice) || sellPrice <= 0) {
-            showInputError('sellPrice');
-            hasError = true;
-        }
-
-        if (!document.getElementById("quantity").value.trim()) {
-            showInputError('quantity');
-            hasError = true;
-        } else if (isNaN(quantity) || quantity <= 0) {
-            showInputError('quantity');
-            hasError = true;
-        }
-
-        if (hasError) {
-            return;
-        }
-
-        // 处理手续费
-        if (isNaN(commission)) {
-            commission = 0;
-        }
-
-        // 添加按钮加载状态
-        const calculateBtn = document.getElementById('calculate-btn');
-        calculateBtn.classList.add('loading');
-        
-        // 触觉反馈
-        if (navigator.vibrate) {
-            navigator.vibrate(50);
-        }
-
-        // 模拟计算过程，增强用户体验
-        setTimeout(() => {
-            performCalculation(buyPrice, sellPrice, quantity, commission);
-            calculateBtn.classList.remove('loading');
-        }, 800);
-    }
-
-    // 执行计算
-    function performCalculation(buyPrice, sellPrice, quantity, commission) {
-        const netProfit = (sellPrice - buyPrice) * quantity - commission;
-        const costBasis = buyPrice * quantity;
-        const percentage = costBasis !== 0 ? (netProfit / costBasis) * 100 : 0;
-
-        // 更新结果显示
-        const profitAmountEl = document.getElementById("profit-amount");
-        const profitPercentageEl = document.getElementById("profit-percentage");
-        const resultContainer = document.getElementById("result-container");
-
-        // 格式化金额显示
-        const formattedAmount = Math.abs(netProfit).toLocaleString('zh-CN', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        });
-
-        profitAmountEl.textContent = `${netProfit >= 0 ? '+' : '-'}¥${formattedAmount}`;
-        profitPercentageEl.textContent = `${percentage >= 0 ? '+' : ''}${percentage.toFixed(2)}%`;
-
-        // 设置颜色样式
-        if (netProfit >= 0) {
-            profitAmountEl.className = "ios-result-value profit";
-            profitPercentageEl.className = "ios-result-value profit";
-        } else {
-            profitAmountEl.className = "ios-result-value loss";
-            profitPercentageEl.className = "ios-result-value loss";
-        }
-
-        // 显示结果
-        resultContainer.style.display = 'block';
-        
-        // 滚动到结果区域
-        setTimeout(() => {
-            resultContainer.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'nearest' 
-            });
-        }, 100);
-
-        // 保存计算历史（可选功能）
-        saveCalculationHistory({
-            buyPrice,
-            sellPrice,
-            quantity,
-            commission,
-            netProfit,
-            percentage,
-            timestamp: new Date().toISOString()
-        });
-    }
-
-    // 清除所有错误提示
-    function clearAllErrors() {
-        const inputs = ['buyPrice', 'sellPrice', 'quantity', 'commission'];
-        inputs.forEach(id => clearInputError(id));
-    }
-
-    // 保存计算历史
-    function saveCalculationHistory(calculation) {
-        try {
-            let history = JSON.parse(localStorage.getItem('buysell_history') || '[]');
-            history.unshift(calculation);
-            
-            // 只保留最近10次计算
-            if (history.length > 10) {
-                history = history.slice(0, 10);
-            }
-            
-            localStorage.setItem('buysell_history', JSON.stringify(history));
-        } catch (e) {
-            console.warn('无法保存计算历史:', e);
-        }
-    }
-
-    // 快捷键支持
-    document.addEventListener('keydown', function(e) {
-        // Ctrl/Cmd + Enter 快速计算
-        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-            e.preventDefault();
-            calculateProfit();
-        }
-        
-        // Escape 清除结果
-        if (e.key === 'Escape') {
-            const resultContainer = document.getElementById("result-container");
-            if (resultContainer.style.display === 'block') {
-                resultContainer.style.display = 'none';
-            }
-        }
-    });
-
-    // 性能优化：防抖函数
-    function debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    }
-
-    // 应用防抖到自动保存
-    const debouncedSave = debounce(saveToCache, 300);
-
-    // 错误处理
-    window.addEventListener('error', function(e) {
-        console.error('页面错误:', e.error);
-        // 可以在这里添加错误上报逻辑
-    });
-
-    // 页面可见性变化时保存数据
-    document.addEventListener('visibilitychange', function() {
-        if (document.hidden) {
-            saveToCache();
-        }
-    });
-</script>
+    <script src="script.js"></script>
 </body>
 </html>
