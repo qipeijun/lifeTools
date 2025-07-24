@@ -13,24 +13,25 @@
             background: var(--ios-light-gray);
             border: 1px solid var(--ios-border);
             border-radius: 12px;
-            padding: 6px 12px;
-            font-size: 13px;
+            padding: 10px 16px; /* 增加内边距 */
+            font-size: 15px; /* 增加字体大小 */
             color: var(--ios-text-secondary);
             cursor: pointer;
             transition: all 0.3s ease;
             -webkit-appearance: none;
             appearance: none;
-            padding-right: 24px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            padding-right: 32px; /* 增加右侧内边距 */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 8px center;
-            background-size: 10px;
+            background-position: right 12px center;
+            background-size: 12px;
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-            min-width: 100px;
-            margin: 20px auto 0;
+            min-width: 140px; /* 增加最小宽度 */
+            margin: 24px auto 0;
             display: block;
+            height: 44px; /* 确保足够的触控高度 */
         }
 
         .theme-switch:hover {
@@ -145,6 +146,42 @@
             color: var(--ios-text-primary);
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
+            transition: opacity 0.5s ease;
+        }
+        
+        /* 页面加载状态 */
+        body.loading .ios-card {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        
+        /* 页面加载动画 */
+        .page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--ios-light-gray);
+            z-index: 1000;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        
+        .page-loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .loader-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(0, 122, 255, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--ios-blue);
+            animation: spin 1s linear infinite;
         }
         
         /* iOS 风格卡片 */
@@ -205,19 +242,33 @@
         /* iOS 风格输入框 */
         .ios-input {
             width: 100%;
-            padding: 12px 16px;
+            padding: 14px 16px; /* 增加内边距 */
             border: 1px solid var(--ios-border);
             border-radius: 10px;
             font-size: 17px;
             background-color: #FFFFFF;
             -webkit-appearance: none;
             color: var(--ios-text-primary);
+            transition: all 0.2s ease;
+            min-height: 52px; /* 确保最小高度适合触控 */
         }
         
         .ios-input:focus {
             outline: none;
             border-color: var(--ios-blue);
             box-shadow: 0 0 0 1px var(--ios-blue);
+        }
+        
+        /* 输入错误震动效果 */
+        @keyframes shake-error {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+        }
+        
+        .shake-error {
+            animation: shake-error 0.4s ease-in-out;
         }
 
         /* iOS 26 风格输入框 */
@@ -245,19 +296,50 @@
             background: var(--ios-blue);
             color: white;
             border: none;
-            padding: 14px;
+            padding: 16px; /* 增加按钮高度 */
             width: 100%;
             border-radius: 10px;
             font-size: 17px;
             font-weight: 600;
             cursor: pointer;
             margin-top: 12px;
-            transition: background-color 0.2s, transform 0.1s;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            min-height: 54px; /* 确保最小高度适合触控 */
         }
         
         .ios-button:active {
             opacity: 0.9;
             transform: scale(0.98);
+        }
+        
+        /* 按钮加载状态 */
+        .ios-button.loading {
+            pointer-events: none;
+        }
+        
+        .ios-button.loading::after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to {transform: rotate(360deg);}
+        }
+        
+        .ios-button.loading span {
+            visibility: hidden;
         }
 
         /* iOS 26 风格按钮 */
@@ -462,7 +544,7 @@
             position: relative;
             display: block;
             width: 100%;
-            padding: 12px 16px;
+            padding: 14px 16px; /* 增加内边距 */
             text-align: left;
             border: 1px solid var(--ios-border);
             border-radius: 10px;
@@ -471,6 +553,7 @@
             color: var(--ios-text-primary);
             box-sizing: border-box;
             cursor: pointer;
+            min-height: 52px; /* 确保最小高度适合触控 */
         }
         
         /* 悬浮状态 */
@@ -766,7 +849,11 @@
         }
     </style>
 </head>
-<body>
+<body class="loading">
+    <div class="page-loader" id="page-loader">
+        <div class="loader-spinner"></div>
+    </div>
+    
     <div class="ios-card">
         <h1 class="ios-title">豆浆预约助手</h1>
         
@@ -793,7 +880,7 @@
             <input type="number" id="cook-time" class="ios-input" value="30" min="1" max="120">
         </div>
         
-        <button class="ios-button" onclick="calculateTime()">计算预约时间</button>
+        <button class="ios-button" id="calculate-button" onclick="calculateTime()">计算预约时间</button>
         
         <div id="result" class="ios-result">
             <div class="ios-description-title">预约设置</div>
@@ -889,14 +976,38 @@
         }
         
         function calculateTime() {
+            // 添加触觉反馈（如果设备支持）
+            if (navigator.vibrate) {
+                navigator.vibrate(15);
+            }
+            
+            // 添加按钮加载状态
+            const calculateButton = document.getElementById('calculate-button');
+            const originalText = calculateButton.innerHTML;
+            calculateButton.innerHTML = '<span>' + originalText + '</span>';
+            calculateButton.classList.add('loading');
+            
+            // 使用setTimeout模拟计算过程，增强用户体验
+            setTimeout(() => {
+                calculateButton.classList.remove('loading');
+                calculateButton.innerHTML = originalText;
+                performCalculation();
+            }, 500);
+        }
+        
+        function performCalculation() {
             // 获取用户输入
             const wakeTimeStr = document.getElementById('wake-time').value;
             const cookTime = parseInt(document.getElementById('cook-time').value);
             
-            if (isNaN(cookTime) || cookTime <= 0) {
-                alert("请输入有效的制作时间");
+            // 验证输入
+            if (isNaN(cookTime) || cookTime <= 0 || cookTime > 120) {
+                showInputError('cook-time', "请输入有效的制作时间（1-120分钟）");
                 return;
             }
+            
+            // 清除所有错误提示
+            clearAllErrors();
             
             // 保存设置到本地存储
             saveSettings();
@@ -981,8 +1092,58 @@
             document.getElementById('result').style.display = 'block';
         }
         
+        // 显示输入错误
+        function showInputError(inputId, message) {
+            const input = document.getElementById(inputId);
+            input.style.borderColor = 'var(--ios-red)';
+            input.style.boxShadow = '0 0 0 1px var(--ios-red)';
+            
+            // 添加错误提示文本
+            let errorMsg = document.getElementById(`${inputId}-error`);
+            if (!errorMsg) {
+                errorMsg = document.createElement('div');
+                errorMsg.id = `${inputId}-error`;
+                errorMsg.style.color = 'var(--ios-red)';
+                errorMsg.style.fontSize = '14px';
+                errorMsg.style.marginTop = '6px';
+                errorMsg.style.fontWeight = '500';
+                input.parentNode.appendChild(errorMsg);
+            }
+            errorMsg.textContent = message;
+            
+            // 添加输入框聚焦事件，清除错误状态
+            input.addEventListener('focus', function() {
+                this.style.borderColor = '';
+                this.style.boxShadow = '';
+                if (errorMsg) errorMsg.textContent = '';
+            }, {once: true});
+            
+            // 添加震动反馈效果
+            input.classList.add('shake-error');
+            setTimeout(() => {
+                input.classList.remove('shake-error');
+            }, 500);
+        }
+        
+        // 清除所有错误提示
+        function clearAllErrors() {
+            const errorElements = document.querySelectorAll('[id$="-error"]');
+            errorElements.forEach(el => el.textContent = '');
+            
+            const inputs = document.querySelectorAll('.ios-input');
+            inputs.forEach(input => {
+                input.style.borderColor = '';
+                input.style.boxShadow = '';
+            });
+        }
+        
         // 页面加载完成后自动计算一次并开始更新当前时间
         window.onload = function() {
+            // 添加页面加载动画
+            setTimeout(() => {
+                document.body.classList.remove('loading');
+                document.getElementById('page-loader').classList.add('hidden');
+            }, 500);
             // 加载保存的主题
             const savedTheme = localStorage.getItem('doujiang_theme');
             const themeSelect = document.querySelector('.theme-switch');
