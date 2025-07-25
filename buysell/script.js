@@ -25,6 +25,9 @@
         
         // 初始化键盘快捷键
         initializeKeyboardHandlers();
+        
+        // 初始化收益率设置功能
+        initializeProfitRateSettings();
     });
 
     // 初始化输入框处理器
@@ -337,10 +340,264 @@
         }
     });
 
+    // 初始化收益率设置功能
+    function initializeProfitRateSettings() {
+        const settingsIcon = document.querySelector('.settings-icon');
+        const dropdown = document.getElementById('profit-rate-dropdown');
+        const customInputContainer = document.getElementById('custom-input-container');
+        const customRateInput = document.getElementById('custom-rate-input');
+        const applyCustomRateBtn = document.getElementById('apply-custom-rate');
+        
+        if (!settingsIcon || !dropdown) return;
+        
+        // 点击齿轮图标显示/隐藏下拉框
+        settingsIcon.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdown.classList.toggle('show');
+        });
+        
+        // 点击页面其他地方关闭下拉框
+        document.addEventListener('click', function(e) {
+            if (!dropdown.contains(e.target) && !settingsIcon.contains(e.target)) {
+                dropdown.classList.remove('show');
+                if (customInputContainer) {
+                    customInputContainer.style.display = 'none';
+                }
+            }
+        });
+        
+        // 处理下拉选项点击
+        const dropdownOptions = document.querySelectorAll('.dropdown-option');
+        dropdownOptions.forEach(function(option) {
+            option.addEventListener('click', function(e) {
+                e.stopPropagation();
+                
+                if (option.classList.contains('custom-rate')) {
+                    // 显示自定义输入框
+                    if (customInputContainer) {
+                        customInputContainer.style.display = 'flex';
+                        if (customRateInput) {
+                            customRateInput.focus();
+                        }
+                    }
+                } else {
+                    // 使用预设收益率
+                    const rate = parseFloat(option.dataset.rate);
+                    if (!isNaN(rate)) {
+                        calculateSellPriceByRate(rate);
+                        dropdown.classList.remove('show');
+                    }
+                }
+            });
+        });
+        
+        // 处理自定义收益率确定按钮
+        if (applyCustomRateBtn && customRateInput) {
+            applyCustomRateBtn.addEventListener('click', function() {
+                const customRate = parseFloat(customRateInput.value);
+                if (!isNaN(customRate) && customRate >= 0 && customRate <= 100) {
+                    calculateSellPriceByRate(customRate);
+                    dropdown.classList.remove('show');
+                    customInputContainer.style.display = 'none';
+                    customRateInput.value = '';
+                } else {
+                    alert('请输入0-100之间的有效收益率');
+                    customRateInput.focus();
+                }
+            });
+            
+            // 回车键确定
+            customRateInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    applyCustomRateBtn.click();
+                }
+            });
+        }
+    }
+    
+    // 根据目标收益率反向计算卖出价格
+    function calculateSellPriceByRate(targetRate) {
+        const buyPriceEl = document.getElementById("buyPrice");
+        const sellPriceEl = document.getElementById("sellPrice");
+        const quantityEl = document.getElementById("quantity");
+        const commissionEl = document.getElementById("commission");
+        
+        if (!buyPriceEl || !sellPriceEl || !quantityEl || !commissionEl) {
+            return;
+        }
+        
+        const buyPrice = parseFloat(buyPriceEl.value);
+        const quantity = parseInt(quantityEl.value);
+        let commission = parseFloat(commissionEl.value);
+        
+        // 验证必要输入
+        if (isNaN(buyPrice) || buyPrice <= 0) {
+            alert('请先输入有效的买入价格');
+            buyPriceEl.focus();
+            return;
+        }
+        
+        if (isNaN(quantity) || quantity <= 0) {
+            alert('请先输入有效的交易数量');
+            quantityEl.focus();
+            return;
+        }
+        
+        if (isNaN(commission)) {
+            commission = 0;
+        }
+        
+        // 计算目标卖出价格
+        // 公式：目标收益率 = (卖出收入 - 买入成本 - 手续费) / 买入成本
+        // 卖出收入 = 卖出价格 * 数量
+        // 所以：卖出价格 = (买入成本 * (1 + 目标收益率) + 手续费) / 数量
+        const buyCost = buyPrice * quantity;
+        const targetSellPrice = (buyCost * (1 + targetRate / 100) + commission) / quantity;
+        
+        // 设置卖出价格（保留4位小数）
+        sellPriceEl.value = targetSellPrice.toFixed(4);
+        
+        // 自动计算结果
+        setTimeout(function() {
+            calculateProfit();
+        }, 100);
+        
+        // 提示用户
+        const message = `已根据目标收益率 ${targetRate}% 计算出卖出价格：${targetSellPrice.toFixed(4)} 元`;
+        console.log(message);
+        
+        // 显示Toast提示
+        showToast(`目标收益率 ${targetRate}%，建议卖出价格：${targetSellPrice.toFixed(4)} 元`);
+    }
+    
+    // 显示提示信息 - iOS 18 通知样式
+    function showToast(message) {
+        // 创建提示容器
+        const toastContainer = document.createElement('div');
+        toastContainer.className = 'ios-toast-container';
+        
+        // 创建提示内容
+        const toast = document.createElement('div');
+        toast.className = 'ios-toast';
+        
+        // 创建图标
+        const icon = document.createElement('div');
+        icon.className = 'ios-toast-icon';
+        icon.innerHTML = `
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" fill="currentColor"/>
+            </svg>
+        `;
+        
+        // 创建文本内容
+        const textContent = document.createElement('div');
+        textContent.className = 'ios-toast-text';
+        textContent.textContent = message;
+        
+        // 组装元素
+        toast.appendChild(icon);
+        toast.appendChild(textContent);
+        toastContainer.appendChild(toast);
+        
+        // 设置容器样式
+        toastContainer.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 10000;
+            pointer-events: none;
+            padding: env(safe-area-inset-top, 44px) 16px 0 16px;
+        `;
+        
+        // 设置Toast样式 - 使用更透明的毛玻璃效果
+        toast.style.cssText = `
+            background-color: rgba(248, 248, 252, 0.2);
+            -webkit-backdrop-filter: blur(14px);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin: 0 auto;
+            max-width: 400px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+            transform: translateY(-100px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+        `;
+        
+        // 设置图标样式
+        icon.style.cssText = `
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #34C759;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            flex-shrink: 0;
+        `;
+        
+        // 设置文本样式
+        textContent.style.cssText = `
+            font-size: 15px;
+            font-weight: 500;
+            color: #1D1D1F;
+            line-height: 1.4;
+            flex: 1;
+        `;
+        
+        // 暗黑模式适配
+        if (document.body.classList.contains('dark-mode')) {
+            toast.style.backgroundColor = 'rgba(28, 28, 30, 0.2)';
+            toast.style.borderColor = 'rgba(84, 84, 88, 0.15)';
+            textContent.style.color = '#FFFFFF';
+        }
+        
+        document.body.appendChild(toastContainer);
+        
+        // 显示动画
+        setTimeout(function() {
+            toast.style.transform = 'translateY(0)';
+            toast.style.opacity = '1';
+        }, 50);
+        
+        // 3.5秒后自动消失
+        setTimeout(function() {
+            toast.style.transform = 'translateY(-100px)';
+            toast.style.opacity = '0';
+            setTimeout(function() {
+                if (toastContainer.parentNode) {
+                    toastContainer.parentNode.removeChild(toastContainer);
+                }
+            }, 400);
+        }, 3500);
+        
+        // 1秒后可点击消失
+        setTimeout(function() {
+            toastContainer.style.pointerEvents = 'auto';
+            toast.style.cursor = 'pointer';
+            toast.addEventListener('click', function() {
+                toast.style.transform = 'translateY(-100px)';
+                toast.style.opacity = '0';
+                setTimeout(function() {
+                    if (toastContainer.parentNode) {
+                        toastContainer.parentNode.removeChild(toastContainer);
+                    }
+                }, 400);
+            });
+        }, 1000);
+    }
+
     // 全局函数（保持向后兼容）
     window.calculateProfit = calculateProfit;
 
-// ====== 主题切换功能 ======
+    // ====== 主题切换功能 ======
     document.addEventListener('DOMContentLoaded', function() {
         const toggle = document.getElementById('theme-toggle');
         const emoji = document.getElementById('theme-emoji');
