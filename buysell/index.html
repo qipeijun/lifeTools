@@ -67,7 +67,34 @@
                         <div id="profit-amount" class="ios-result-item-value main-value">0.00</div>
                     </div>
                     <div class="ios-result-item">
-                        <div class="ios-result-item-label">收益率</div>
+                        <div class="ios-result-item-label">
+                            收益率
+                            <div class="profit-rate-settings" id="profit-rate-settings">
+                                <svg class="settings-icon" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                                </svg>
+                                <div class="profit-rate-dropdown" id="profit-rate-dropdown">
+                                    <div class="dropdown-header">选择目标收益率</div>
+                                    <div class="dropdown-options">
+                                        <div class="dropdown-option" data-rate="1">1%</div>
+                                        <div class="dropdown-option" data-rate="2">2%</div>
+                                        <div class="dropdown-option" data-rate="3">3%</div>
+                                        <div class="dropdown-option" data-rate="5">5%</div>
+                                        <div class="dropdown-option" data-rate="8">8%</div>
+                                        <div class="dropdown-option" data-rate="10">10%</div>
+                                        <div class="dropdown-option" data-rate="15">15%</div>
+                                        <div class="dropdown-option" data-rate="20">20%</div>
+                                        <div class="dropdown-option" data-rate="30">30%</div>
+                                        <div class="dropdown-option" data-rate="50">50%</div>
+                                        <div class="dropdown-option custom-rate">自定义</div>
+                                    </div>
+                                    <div class="custom-input-container" id="custom-input-container" style="display: none;">
+                                        <input type="number" id="custom-rate-input" placeholder="输入收益率%" min="0" max="100" step="0.1">
+                                        <button id="apply-custom-rate">确定</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div id="profit-percentage" class="ios-result-item-value">0.00%</div>
                     </div>
                 </div>
