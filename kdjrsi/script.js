@@ -71,7 +71,7 @@
     function showSelectError(selectId) {
         const select = document.getElementById(selectId);
         if (select) {
-            select.classList.add('error');
+            select.classList.add('invalid');
         }
     }
 
@@ -79,7 +79,7 @@
     function clearSelectError(selectId) {
         const select = document.getElementById(selectId);
         if (select) {
-            select.classList.remove('error');
+            select.classList.remove('invalid');
         }
     }
 
@@ -365,8 +365,8 @@ ${analysis.suggestion}`;
 
         // 健康APP风格颜色（支持暗黑模式）
         const healthColors = {
-            primary: isDarkMode ? '#EBEBF5' : '#8E8E93',
-            secondary: isDarkMode ? '#AEAEB2' : '#C7C7CC',
+            primary: isDarkMode ? '#EBEBF5' : '#1A1A1A',
+            secondary: isDarkMode ? '#AEAEB2' : '#3C3C43',
             // 调整暗黑模式下的背景色为更柔和的深灰色，透明度更低
             background: isDarkMode ? 'rgba(36, 37, 42, 0.82)' : 'rgba(248, 248, 248, 0.4)',
             // 调整暗黑模式下的网格色为更细腻、低对比度

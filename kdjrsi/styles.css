@@ -304,7 +304,7 @@ body.dark-mode .ios-select:focus {
 /* 建议区域样式 - 确保与按钮等宽 */
 .ios-suggestion {
     padding: 20px;
-    background: rgba(0, 122, 255, 0.03);
+    background: rgba(0, 122, 255, 0.10); /* 比原来更明显一点 */
     border-radius: 16px;
     border: none;
     margin-bottom: 20px;
@@ -497,7 +497,7 @@ canvas {
     }
     
     .ios-suggestion {
-        background: rgba(0, 122, 255, 0.05);
+        background: rgba(10, 132, 255, 0.32); /* 深色模式下更深 */
         border: none;
     }
     
@@ -543,4 +543,39 @@ canvas {
 }
 body.dark-mode {
   background: var(--ios-background) !important;
+}
+
+.ios-suggestion p {
+    color: #222C3A;
+    font-weight: 500;
+}
+
+.ios-result-title, .ios-suggestion-title {
+    color: #0A2540;
+}
+
+/* 深色模式下加强对比度 */
+@media (prefers-color-scheme: dark) {
+    .ios-suggestion p {
+        color: #F5F6FA;
+        font-weight: 500;
+    }
+    .ios-result-title, .ios-suggestion-title {
+        color: #E5EFFF;
+    }
+}
+
+.dark-mode .ios-suggestion p, body.dark-mode .ios-suggestion p {
+    color: #F5F6FA !important;
+    font-weight: 500 !important;
+}
+.dark-mode .ios-result-title, .dark-mode .ios-suggestion-title, body.dark-mode .ios-result-title, body.dark-mode .ios-suggestion-title {
+    color: #E5EFFF !important;
+}
+
+/* 2. 未选择内容时 select 红色高亮边框样式 */
+.ios-select.invalid {
+    border-color: #FF3B30 !important;
+    box-shadow: 0 0 0 2px rgba(255,59,48,0.18) !important;
+    animation: shake 0.25s linear 1;
 }
