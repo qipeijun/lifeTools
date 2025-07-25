@@ -6,22 +6,35 @@
     --ios-green: #34C759;
     --ios-gray: #8E8E93;
     
-    /* 背景色 */
+    /* 亮色模式 - 背景色 */
     --ios-background: #F2F2F7;
     --ios-background-secondary: #FFFFFF;
     
-    /* 文字颜色 */
+    /* 亮色模式 - 文字颜色 */
     --ios-text-primary: #000000;
     --ios-text-secondary: #3C3C43;
     --ios-text-tertiary: #8E8E93;
     
-    /* 边框和分隔线 */
+    /* 亮色模式 - 边框和分隔线 */
     --ios-border: rgba(60, 60, 67, 0.2);
     --ios-separator: rgba(60, 60, 67, 0.1);
     
     /* 阴影 */
     --ios-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
     --ios-shadow-light: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* 暗黑模式变量定义 */
+body.dark-mode {
+    --ios-background: #1C1C1E;
+    --ios-background-secondary: #2C2C2E;
+    --ios-text-primary: #FFFFFF;
+    --ios-text-secondary: rgba(235, 235, 245, 0.6);
+    --ios-text-tertiary: rgba(235, 235, 245, 0.3);
+    --ios-border: rgba(84, 84, 88, 0.65);
+    --ios-separator: rgba(60, 60, 67, 0.36);
+    --ios-blue: #0A84FF;
+    --ios-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 * {
@@ -41,7 +54,7 @@ body {
     line-height: 1.47;
     -webkit-font-smoothing: antialiased;
     min-height: 100vh;
-    transition: opacity 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease, opacity 0.3s ease;
 }
 
 /* 页面加载动画 */
@@ -56,7 +69,7 @@ body.loading {
     margin-bottom: 20px;
     box-shadow: var(--ios-shadow);
     border: 1px solid var(--ios-separator);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
 }
 
 .ios-card:hover {
@@ -123,28 +136,30 @@ body.loading {
 }
 
 .ios-input {
+    -webkit-appearance: none;
+    appearance: none;
     width: 100%;
     padding: 16px 20px;
-    border: 1px solid var(--ios-border);
     border-radius: 16px;
     font-size: 17px;
-    background: rgba(255, 255, 255, 0.9);
-    color: var(--ios-text-primary);
-    transition: all 0.3s ease;
     min-height: 56px;
+    border: 1px solid var(--ios-border);
+    background: var(--ios-background-secondary);
+    color: var(--ios-text-primary);
+    caret-color: var(--ios-blue);
+    transition: all 0.3s ease;
 }
 
 .ios-input:focus {
     outline: none;
     border-color: var(--ios-blue);
-    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+    box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.25);
     transform: translateY(-1px);
-    background: rgba(255, 255, 255, 1);
 }
 
 .ios-input::placeholder {
     color: var(--ios-text-tertiary);
-    opacity: 0.8;
+    opacity: 1;
 }
 
 /* 错误状态样式 */
@@ -282,7 +297,7 @@ body.loading {
 }
 
 .ios-result-item {
-    background: rgba(0, 0, 0, 0.02);
+    background: rgba(120, 120, 128, 0.1);
     border-radius: 12px;
     padding: 18px 16px;
     text-align: center;
@@ -319,10 +334,10 @@ body.loading {
 
 /* 成本详情列表 */
 .ios-result-details {
-    background: rgba(0, 0, 0, 0.01);
+    background: rgba(120, 120, 128, 0.05);
     border-radius: 12px;
     overflow: hidden;
-    border: 1px solid rgba(60, 60, 67, 0.03);
+    border: 1px solid var(--ios-separator);
 }
 
 .ios-result-detail {
@@ -330,7 +345,7 @@ body.loading {
     justify-content: space-between;
     align-items: center;
     padding: 14px 16px;
-    border-bottom: 1px solid rgba(60, 60, 67, 0.03);
+    border-bottom: 1px solid var(--ios-separator);
 }
 
 .ios-result-detail:last-child {
@@ -413,53 +428,6 @@ body.loading {
     }
 }
 
-/* 深色模式支持 */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --ios-background: #000000;
-        --ios-background-secondary: #1C1C1E;
-        --ios-text-primary: #FFFFFF;
-        --ios-text-secondary: #EBEBF5;
-        --ios-text-tertiary: #AEAEB2;
-        --ios-border: rgba(84, 84, 88, 0.8);
-        --ios-separator: rgba(84, 84, 88, 0.4);
-    }
-    
-    body {
-        background: #000000;
-    }
-    
-    .ios-input {
-        background: rgba(28, 28, 30, 0.9);
-        border-color: rgba(84, 84, 88, 0.8);
-        color: var(--ios-text-primary);
-    }
-    
-    .ios-input:focus {
-        background: rgba(28, 28, 30, 1);
-        border-color: var(--ios-blue);
-        color: var(--ios-text-primary);
-    }
-    
-    .ios-input::placeholder {
-        color: var(--ios-text-tertiary);
-        opacity: 0.8;
-    }
-    
-    .ios-result-item {
-        background: rgba(255, 255, 255, 0.05);
-    }
-    
-    .ios-result-details {
-        background: rgba(255, 255, 255, 0.02);
-        border-color: rgba(84, 84, 88, 0.1);
-    }
-    
-    .ios-result-detail {
-        border-bottom-color: rgba(84, 84, 88, 0.1);
-    }
-}
-
 /* 无障碍支持 */
 @media (prefers-reduced-motion: reduce) {
     * {
@@ -467,18 +435,4 @@ body.loading {
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
     }
-}
-
-.dark-mode {
-  --ios-background: #18181a !important;
-  --ios-background-secondary: #232326 !important;
-  --ios-text-primary: #fff !important;
-  --ios-text-secondary: #bdbdc0 !important;
-  --ios-text-tertiary: #888 !important;
-  --ios-border: #333 !important;
-  --ios-blue: #3399ff !important;
-  --ios-shadow: 0 4px 16px rgba(0,0,0,0.4) !important;
-}
-body.dark-mode {
-  background: var(--ios-background) !important;
 }

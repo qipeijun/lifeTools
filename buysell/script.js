@@ -342,26 +342,44 @@
 
 // ====== 主题切换功能 ======
     document.addEventListener('DOMContentLoaded', function() {
-        var toggle = document.getElementById('theme-toggle');
-        var emoji = document.getElementById('theme-emoji');
+        const toggle = document.getElementById('theme-toggle');
+        const emoji = document.getElementById('theme-emoji');
         if (!toggle || !emoji) return;
-        var darkClass = 'dark-mode';
-        function setTheme(dark) {
-            if (dark) {
-                document.documentElement.classList.add(darkClass);
-                emoji.textContent = '🌑'; // 新月
-            } else {
-                document.documentElement.classList.remove(darkClass);
-                emoji.textContent = '🌞';
-            }
+
+        const darkClass = 'dark-mode';
+        const themeKey = 'theme';
+
+        function setTheme(isDark) {
+            // 核心修复：确保在 body 元素上切换 class
+            document.body.classList.toggle(darkClass, isDark);
+            emoji.textContent = isDark ? '🌑' : '🌞';
         }
-        // 修正初始逻辑：light 显示🌞，dark 显示🌑
-        var isDark = localStorage.getItem('theme') === 'dark';
-        setTheme(isDark);
-        toggle.onclick = function() {
-            isDark = !isDark;
+
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem(themeKey);
+            let isDark;
+
+            if (savedTheme) {
+                // 优先使用本地存储的用户选择
+                isDark = savedTheme === 'dark';
+            } else {
+                // 否则，遵循系统设置
+                isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            }
+            
             setTheme(isDark);
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+
+        toggle.onclick = function() {
+            // 切换当前主题状态
+            const isCurrentlyDark = document.body.classList.contains(darkClass);
+            const newIsDark = !isCurrentlyDark;
+            setTheme(newIsDark);
+            // 保存用户选择到本地存储
+            localStorage.setItem(themeKey, newIsDark ? 'dark' : 'light');
         };
+
+        // 页面加载时初始化主题
+        initializeTheme();
     });
 })();
