@@ -39,7 +39,7 @@ body.dark-mode {
 
 /* 暗黑模式下拉框毛玻璃效果 */
 body.dark-mode .profit-rate-dropdown {
-    background-color: rgba(28, 28, 30, 0.25);
+    background-color: rgba(28, 28, 30, 0.65);
     border-color: rgba(84, 84, 88, 0.15);
 }
 
@@ -344,7 +344,7 @@ body.loading {
     position: absolute;
     top: 100%;
     right: 0;
-    background-color: rgba(248, 248, 252, 0.25);
+    background-color: rgba(248, 248, 252, 0.75);
     -webkit-backdrop-filter: blur(14px);
     backdrop-filter: blur(14px);
     border: 1px solid rgba(255, 255, 255, 0.15);
@@ -356,6 +356,18 @@ body.loading {
     visibility: hidden;
     transform: translateY(-10px);
     transition: all 0.3s ease;
+    z-index: 2000;
+}
+
+/* 向上弹出的下拉框样式 */
+.profit-rate-dropdown.dropdown-up {
+    top: auto;
+    bottom: 100%;
+    transform: translateY(10px);
+}
+
+.profit-rate-dropdown.dropdown-up.show {
+    transform: translateY(0);
 }
 
 .profit-rate-dropdown.show {
@@ -525,12 +537,12 @@ body.dark-mode .dropdown-option {
     transform: translateX(-50%);
     
     /* 尺寸与间距 */
-    width: auto; /* 宽度由内容自适应 */
-    max-width: calc(100% - 20px); /* 最大宽度，适配小屏幕 */
+    width: calc(100% - 16px); /* 宽度由内容自适应 */
+    max-width: 400px; /* 最大宽度，适配小屏幕 */
     padding: 14px 24px; /* 内部间距，营造药丸形状 */
     
     /* 背景质感 - 参照收益率下拉框，并略微提高不透明度以保证可读性 */
-    background-color: rgba(248, 248, 252, 0.75);
+    background-color: rgba(248, 248, 252, 0.25);
     -webkit-backdrop-filter: blur(14px);
     backdrop-filter: blur(14px);
     

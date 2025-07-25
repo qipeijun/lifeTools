@@ -340,6 +340,41 @@
         }
     });
 
+    // 碰撞检测函数 - 检测下拉框是否会超出视窗底部
+    function performCollisionDetection(dropdown, trigger) {
+        if (!dropdown || !trigger) return;
+        
+        // 重置下拉框位置类名
+        dropdown.classList.remove('dropdown-up');
+        
+        // 临时显示下拉框以获取尺寸（但不透明度为0）
+        dropdown.style.visibility = 'hidden';
+        dropdown.style.opacity = '0';
+        dropdown.style.display = 'block';
+        
+        // 获取触发元素和下拉框的位置信息
+        const triggerRect = trigger.getBoundingClientRect();
+        const dropdownRect = dropdown.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        
+        // 计算下拉框底部位置
+        const dropdownBottom = triggerRect.bottom + dropdownRect.height;
+        
+        // 检查是否会超出视窗底部（留20px缓冲区）
+        const bufferZone = 20;
+        const willOverflow = dropdownBottom > (viewportHeight - bufferZone);
+        
+        if (willOverflow) {
+            // 向上显示
+            dropdown.classList.add('dropdown-up');
+        }
+        
+        // 恢复下拉框的显示状态
+        dropdown.style.visibility = '';
+        dropdown.style.opacity = '';
+        dropdown.style.display = '';
+    }
+
     // 初始化收益率设置功能
     function initializeProfitRateSettings() {
         const settingsIcon = document.querySelector('.settings-icon');
@@ -353,7 +388,14 @@
         // 点击齿轮图标显示/隐藏下拉框
         settingsIcon.addEventListener('click', function(e) {
             e.stopPropagation();
-            dropdown.classList.toggle('show');
+            
+            if (dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
+            } else {
+                // 显示下拉框前进行碰撞检测
+                performCollisionDetection(dropdown, settingsIcon);
+                dropdown.classList.add('show');
+            }
         });
         
         // 点击页面其他地方关闭下拉框

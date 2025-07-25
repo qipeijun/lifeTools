@@ -22,6 +22,10 @@
     /* 阴影 */
     --ios-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
     --ios-shadow-light: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+    /* 建议区域颜色 */
+    --ios-suggestion-bg: rgba(0, 122, 255, 0.08);
+    --ios-suggestion-text: #222C3A;
 }
 
 * {
@@ -41,7 +45,7 @@ body {
     line-height: 1.47;
     -webkit-font-smoothing: antialiased;
     min-height: 100vh;
-    transition: opacity 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* 页面加载动画 */
@@ -56,7 +60,7 @@ body.loading {
     margin-bottom: 20px;
     box-shadow: var(--ios-shadow);
     border: 1px solid var(--ios-separator);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .ios-card:hover {
@@ -130,8 +134,7 @@ body.loading {
     border: 1px solid var(--ios-border);
     border-radius: 16px;
     font-size: 17px;
-    background: rgba(255, 255, 255, 0.9);
-    background-color: transparent;
+    background-color: var(--ios-background-secondary);
     color: var(--ios-text-primary);
     transition: all 0.3s ease;
     min-height: 56px;
@@ -304,7 +307,7 @@ body.dark-mode .ios-select:focus {
 /* 建议区域样式 - 确保与按钮等宽 */
 .ios-suggestion {
     padding: 20px;
-    background: rgba(0, 122, 255, 0.10); /* 比原来更明显一点 */
+    background: var(--ios-suggestion-bg);
     border-radius: 16px;
     border: none;
     margin-bottom: 20px;
@@ -312,6 +315,7 @@ body.dark-mode .ios-select:focus {
     margin-left: 0;
     margin-right: 0;
     box-sizing: border-box;
+    transition: background-color 0.3s ease;
 }
 
 .ios-suggestion-title {
@@ -332,10 +336,11 @@ body.dark-mode .ios-select:focus {
 .ios-suggestion p {
     margin: 0;
     font-size: 16px;
-    color: var(--ios-text-secondary);
+    color: var(--ios-suggestion-text);
     line-height: 1.6;
     font-weight: 400;
     white-space: pre-line;
+    transition: color 0.3s ease;
 }
 
 /* iOS 18风格图表容器 */
@@ -352,6 +357,7 @@ body.dark-mode .ios-select:focus {
     position: relative;
     overflow: hidden;
     box-shadow: var(--ios-shadow-light);
+    transition: background-color 0.3s ease, opacity 0.15s ease-in-out;
 }
 
 /* iOS 18风格画布 - 无边框版 */
@@ -466,61 +472,6 @@ canvas {
     }
 }
 
-/* 深色模式支持 */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --ios-background: #000000;
-        --ios-background-secondary: #1C1C1E;
-        --ios-text-primary: #FFFFFF;
-        --ios-text-secondary: #EBEBF5;
-        --ios-text-tertiary: #AEAEB2;
-        --ios-border: rgba(84, 84, 88, 0.8);
-        --ios-separator: rgba(84, 84, 88, 0.4);
-    }
-    
-    body {
-        background: #000000;
-    }
-    
-    .ios-select {
-        background: rgba(28, 28, 30, 0.9);
-        border-color: rgba(84, 84, 88, 0.8);
-        color: var(--ios-text-primary);
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23007AFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-    }
-    
-    .ios-select:focus {
-        background: rgba(44, 44, 48, 0.92) !important;
-        border-color: var(--ios-blue) !important;
-        color: var(--ios-text-primary) !important;
-        box-shadow: 0 0 0 4px rgba(51, 153, 255, 0.18) !important;
-    }
-    
-    .ios-suggestion {
-        background: rgba(10, 132, 255, 0.32); /* 深色模式下更深 */
-        border: none;
-    }
-    
-    .chart-container {
-        background: rgba(255, 255, 255, 0.01);
-        border: none;
-    }
-    
-    .link {
-        background: rgba(0, 122, 255, 0.1);
-        border-color: rgba(0, 122, 255, 0.2);
-    }
-    
-    .link:hover {
-        background: rgba(0, 122, 255, 0.15);
-    }
-
-    @media (prefers-color-scheme: dark) {
-        .ios-select::after {
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%230A84FF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat center/16px 16px;
-        }
-    }
-}
 
 /* 无障碍支持 */
 @media (prefers-reduced-motion: reduce) {
@@ -531,46 +482,21 @@ canvas {
     }
 }
 
-.dark-mode {
-  --ios-background: #000000 !important; /* 更纯粹的黑色背景 */
-  --ios-background-secondary: #1C1C1E !important; /* iOS标准深灰 */
-  --ios-text-primary: #FFFFFF !important;
-  --ios-text-secondary: #EBEBF5 !important;
-  --ios-text-tertiary: #AEAEB2 !important;
-  --ios-border: rgba(84, 84, 88, 0.8) !important;
-  --ios-blue: #0A84FF !important; /* iOS 18 标准蓝色 */
-  --ios-shadow: 0 4px 24px rgba(0,0,0,0.25) !important;
+html.dark-mode, body.dark-mode {
+  --ios-background: #000000;
+  --ios-background-secondary: #1C1C1E;
+  --ios-text-primary: #FFFFFF;
+  --ios-text-secondary: #EBEBF5;
+  --ios-text-tertiary: #AEAEB2;
+  --ios-border: rgba(84, 84, 88, 0.8);
+  --ios-blue: #0A84FF;
+  --ios-shadow: 0 4px 24px rgba(0,0,0,0.25);
+  --ios-suggestion-bg: rgba(10, 132, 255, 0.32);
+  --ios-suggestion-text: #F5F6FA;
 }
+
 body.dark-mode {
-  background: var(--ios-background) !important;
-}
-
-.ios-suggestion p {
-    color: #222C3A;
-    font-weight: 500;
-}
-
-.ios-result-title, .ios-suggestion-title {
-    color: #0A2540;
-}
-
-/* 深色模式下加强对比度 */
-@media (prefers-color-scheme: dark) {
-    .ios-suggestion p {
-        color: #F5F6FA;
-        font-weight: 500;
-    }
-    .ios-result-title, .ios-suggestion-title {
-        color: #E5EFFF;
-    }
-}
-
-.dark-mode .ios-suggestion p, body.dark-mode .ios-suggestion p {
-    color: #F5F6FA !important;
-    font-weight: 500 !important;
-}
-.dark-mode .ios-result-title, .dark-mode .ios-suggestion-title, body.dark-mode .ios-result-title, body.dark-mode .ios-suggestion-title {
-    color: #E5EFFF !important;
+  background: var(--ios-background);
 }
 
 /* 2. 未选择内容时 select 红色高亮边框样式 */
@@ -578,4 +504,8 @@ body.dark-mode {
     border-color: #FF3B30 !important;
     box-shadow: 0 0 0 2px rgba(255,59,48,0.18) !important;
     animation: shake 0.25s linear 1;
+}
+
+.chart-container.chart-reloading {
+    opacity: 0;
 }
