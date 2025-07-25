@@ -406,7 +406,7 @@ body.dark-mode .dropdown-option {
 
 .custom-input-container {
     padding: 12px 16px;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid var(--ios-separator);
     display: flex;
     gap: 8px;
     align-items: center;
@@ -414,27 +414,39 @@ body.dark-mode .dropdown-option {
 
 .custom-input-container input {
     flex: 1;
-    padding: 6px 10px;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
+    padding: 8px 12px;
+    border: 1px solid var(--ios-border);
+    border-radius: 8px;
     font-size: 14px;
-    background: var(--input-bg);
-    color: var(--text-primary);
+    background: var(--ios-background);
+    color: var(--ios-text-primary);
+    transition: all 0.2s ease;
+}
+
+.custom-input-container input:focus {
+    outline: none;
+    border-color: var(--ios-blue);
+    box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.2);
 }
 
 .custom-input-container button {
-    padding: 6px 12px;
-    background: var(--primary-color);
+    padding: 8px 12px;
+    background: var(--ios-blue);
     color: white;
     border: none;
-    border-radius: 6px;
-    font-size: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
 .custom-input-container button:hover {
-    background: var(--primary-hover);
+    background: #0056CC;
+}
+
+.custom-input-container button:active {
+    transform: scale(0.97);
 }
 
 .ios-result-item-value {
@@ -503,6 +515,40 @@ body.dark-mode .dropdown-option {
 
 .neutral {
     color: var(--ios-text-secondary);
+}
+
+/* Toast 弹窗样式 */
+.toast {
+    position: fixed;
+    top: 10px; /* 距离顶部10px */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(242, 242, 247, 0.6); /* Light mode glass */
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    color: var(--ios-text-primary);
+    padding: 12px 20px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 2000;
+    box-shadow: var(--ios-shadow);
+    border: 1px solid var(--ios-separator);
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+    animation: fadeInOut 3s ease-in-out;
+    pointer-events: none;
+}
+
+body.dark-mode .toast {
+    background-color: rgba(44, 44, 46, 0.7); /* Dark mode glass */
+    border: 1px solid rgba(84, 84, 88, 0.65);
+    color: var(--ios-text-primary);
+}
+
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0; transform: translate(-50%, -10px); }
+    10%, 90% { opacity: 1; transform: translate(-50%, 0); }
 }
 
 /* 响应式设计 */
