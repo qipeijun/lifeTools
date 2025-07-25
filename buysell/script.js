@@ -25,6 +25,9 @@
         
         // 初始化键盘快捷键
         initializeKeyboardHandlers();
+        
+        // 初始化收益率设置功能
+        initializeProfitRateSettings();
     });
 
     // 初始化输入框处理器
@@ -337,10 +340,172 @@
         }
     });
 
+    // 初始化收益率设置功能
+    function initializeProfitRateSettings() {
+        const settingsIcon = document.querySelector('.settings-icon');
+        const dropdown = document.getElementById('profit-rate-dropdown');
+        const customInputContainer = document.getElementById('custom-input-container');
+        const customRateInput = document.getElementById('custom-rate-input');
+        const applyCustomRateBtn = document.getElementById('apply-custom-rate');
+        
+        if (!settingsIcon || !dropdown) return;
+        
+        // 点击齿轮图标显示/隐藏下拉框
+        settingsIcon.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdown.classList.toggle('show');
+        });
+        
+        // 点击页面其他地方关闭下拉框
+        document.addEventListener('click', function(e) {
+            if (!dropdown.contains(e.target) && !settingsIcon.contains(e.target)) {
+                dropdown.classList.remove('show');
+                if (customInputContainer) {
+                    customInputContainer.style.display = 'none';
+                }
+            }
+        });
+        
+        // 处理下拉选项点击
+        const dropdownOptions = document.querySelectorAll('.dropdown-option');
+        dropdownOptions.forEach(function(option) {
+            option.addEventListener('click', function(e) {
+                e.stopPropagation();
+                
+                if (option.classList.contains('custom-rate')) {
+                    // 显示自定义输入框
+                    if (customInputContainer) {
+                        customInputContainer.style.display = 'flex';
+                        if (customRateInput) {
+                            customRateInput.focus();
+                        }
+                    }
+                } else {
+                    // 使用预设收益率
+                    const rate = parseFloat(option.dataset.rate);
+                    if (!isNaN(rate)) {
+                        calculateSellPriceByRate(rate);
+                        dropdown.classList.remove('show');
+                    }
+                }
+            });
+        });
+        
+        // 处理自定义收益率确定按钮
+        if (applyCustomRateBtn && customRateInput) {
+            applyCustomRateBtn.addEventListener('click', function() {
+                const customRate = parseFloat(customRateInput.value);
+                if (!isNaN(customRate) && customRate >= 0 && customRate <= 100) {
+                    calculateSellPriceByRate(customRate);
+                    dropdown.classList.remove('show');
+                    customInputContainer.style.display = 'none';
+                    customRateInput.value = '';
+                } else {
+                    alert('请输入0-100之间的有效收益率');
+                    customRateInput.focus();
+                }
+            });
+            
+            // 回车键确定
+            customRateInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    applyCustomRateBtn.click();
+                }
+            });
+        }
+    }
+    
+    // 根据目标收益率反向计算卖出价格
+    function calculateSellPriceByRate(targetRate) {
+        const buyPriceEl = document.getElementById("buyPrice");
+        const sellPriceEl = document.getElementById("sellPrice");
+        const quantityEl = document.getElementById("quantity");
+        const commissionEl = document.getElementById("commission");
+        
+        if (!buyPriceEl || !sellPriceEl || !quantityEl || !commissionEl) {
+            return;
+        }
+        
+        const buyPrice = parseFloat(buyPriceEl.value);
+        const quantity = parseInt(quantityEl.value);
+        let commission = parseFloat(commissionEl.value);
+        
+        // 验证必要输入
+        if (isNaN(buyPrice) || buyPrice <= 0) {
+            alert('请先输入有效的买入价格');
+            buyPriceEl.focus();
+            return;
+        }
+        
+        if (isNaN(quantity) || quantity <= 0) {
+            alert('请先输入有效的交易数量');
+            quantityEl.focus();
+            return;
+        }
+        
+        if (isNaN(commission)) {
+            commission = 0;
+        }
+        
+        // 计算目标卖出价格
+        // 公式：目标收益率 = (卖出收入 - 买入成本 - 手续费) / 买入成本
+        // 卖出收入 = 卖出价格 * 数量
+        // 所以：卖出价格 = (买入成本 * (1 + 目标收益率) + 手续费) / 数量
+        const buyCost = buyPrice * quantity;
+        const targetSellPrice = (buyCost * (1 + targetRate / 100) + commission) / quantity;
+        
+        // 设置卖出价格（保留4位小数）
+        sellPriceEl.value = targetSellPrice.toFixed(4);
+        
+        // 自动计算结果
+        setTimeout(function() {
+            calculateProfit();
+        }, 100);
+        
+        // 提示用户
+        const message = `已根据目标收益率 ${targetRate}% 计算出卖出价格：${targetSellPrice.toFixed(4)} 元`;
+        console.log(message);
+        
+        // 显示Toast提示
+        showToast(`目标收益率 ${targetRate}%，建议卖出价格：${targetSellPrice.toFixed(4)} 元`);
+    }
+    
+    // 显示Toast提示
+    function showToast(message) {
+        // 移除已存在的toast
+        const existingToast = document.querySelector('.toast');
+        if (existingToast) {
+            existingToast.remove();
+        }
+
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.textContent = message;
+        
+        document.body.appendChild(toast);
+
+        // 动画效果
+        setTimeout(() => {
+            toast.style.opacity = '1';
+            toast.style.transform = 'translate(-50%, 0)';
+        }, 10);
+
+        // 3秒后自动移除
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translate(-50%, -10px)';
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 300);
+        }, 3000);
+    }
+
     // 全局函数（保持向后兼容）
     window.calculateProfit = calculateProfit;
 
-// ====== 主题切换功能 ======
+    // ====== 主题切换功能 ======
     document.addEventListener('DOMContentLoaded', function() {
         const toggle = document.getElementById('theme-toggle');
         const emoji = document.getElementById('theme-emoji');
