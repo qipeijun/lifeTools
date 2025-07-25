@@ -14,17 +14,21 @@
 
 ## KDJ-RSI工具
 
-[在线访问](https://qipeijun.github.io/lifeTools/kdjrsi/)
-[在线访问2.0](https://qipeijun.github.io/lifeTools/kdjrsi/index_2.html)
+
 
 KDJ + RSI 智能判断
+KDJ-RSI工具1.0
+[在线访问](https://qipeijun.github.io/lifeTools/kdjrsi/)
 
 **扫码访问：**
-KDJ-RSI工具1.0
 <p>
   <img src="./images/kdj-qr.png" alt="KDJ-RSI工具" width="180" />
 </p>
 KDJ-RSI工具2.0
+
+[在线访问2.0](https://qipeijun.github.io/lifeTools/kdjrsi/index_2.html)
+
+**扫码访问：**
 <p>
   <img src="./images/kdj2.png" alt="KDJ-RSI工具" width="180" />
 </p>
