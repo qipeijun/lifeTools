@@ -517,38 +517,60 @@ body.dark-mode .dropdown-option {
     color: var(--ios-text-secondary);
 }
 
-/* Toast 弹窗样式 */
+/* Toast 弹窗样式 - 重构以模拟 iOS 18 通知 */
 .toast {
     position: fixed;
-    top: 10px; /* 距离顶部10px */
+    top: 10px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: rgba(242, 242, 247, 0.6); /* Light mode glass */
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
+    
+    /* 尺寸与间距 */
+    width: auto; /* 宽度由内容自适应 */
+    max-width: calc(100% - 20px); /* 最大宽度，适配小屏幕 */
+    padding: 14px 24px; /* 内部间距，营造药丸形状 */
+    
+    /* 背景质感 - 参照收益率下拉框，并略微提高不透明度以保证可读性 */
+    background-color: rgba(248, 248, 252, 0.75);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    
+    /* 字体样式 */
     color: var(--ios-text-primary);
-    padding: 12px 20px;
-    border-radius: 24px;
-    font-size: 14px;
-    font-weight: 500;
-    z-index: 2000;
-    box-shadow: var(--ios-shadow);
+    font-size: 16px;
+    text-align: left;
+    
+    /* 边框与圆角 */
+    border-radius: 15px; /* 较大的圆角以形成药丸形状 */
     border: 1px solid var(--ios-separator);
-    opacity: 0;
-    transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
-    animation: fadeInOut 3s ease-in-out;
+    
+    /* 其他样式 */
+    box-shadow: var(--ios-shadow);
+    z-index: 2000;
     pointer-events: none;
+    opacity: 0;
+    animation: toast-slide-in-out 3.5s ease-in-out forwards;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 body.dark-mode .toast {
-    background-color: rgba(44, 44, 46, 0.7); /* Dark mode glass */
-    border: 1px solid rgba(84, 84, 88, 0.65);
-    color: var(--ios-text-primary);
+    /* 背景质感 - 参照暗黑模式下拉框 */
+    background-color: rgba(28, 28, 30, 0.75);
+    border-color: rgba(84, 84, 88, 0.65);
 }
 
-@keyframes fadeInOut {
-    0%, 100% { opacity: 0; transform: translate(-50%, -10px); }
-    10%, 90% { opacity: 1; transform: translate(-50%, 0); }
+@keyframes toast-slide-in-out {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -20px);
+    }
+    10%, 90% {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -20px);
+    }
 }
 
 /* 响应式设计 */
