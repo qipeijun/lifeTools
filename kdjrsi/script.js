@@ -17,6 +17,12 @@
             document.body.classList.remove('loading');
         }, 300);
         
+        // 初始化主题切换
+        initThemeToggle();
+        
+        // 初始化图表主题切换观察器
+        initChartThemeObserver();
+
         // 从缓存加载数据
         loadFromCache();
         
@@ -26,6 +32,79 @@
         // 初始化键盘快捷键
         initializeKeyboardHandlers();
     });
+
+    // ====== 主题切换功能 ======
+    function initThemeToggle() {
+        const toggle = document.getElementById('theme-toggle');
+        const emoji = document.getElementById('theme-emoji');
+        if (!toggle || !emoji) return;
+
+        const darkClass = 'dark-mode';
+
+        function applyTheme(isDark) {
+            document.documentElement.classList.toggle(darkClass, isDark);
+            document.body.classList.toggle(darkClass, isDark);
+            emoji.textContent = isDark ? '🌑' : '🌞';
+        }
+
+        function toggleTheme() {
+            const newThemeIsDark = !document.documentElement.classList.contains(darkClass);
+            localStorage.setItem('theme', newThemeIsDark ? 'dark' : 'light');
+            applyTheme(newThemeIsDark);
+        }
+
+        // 初始化主题
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            applyTheme(savedTheme === 'dark');
+        } else {
+            applyTheme(window.matchMedia('(prefers-color-scheme: dark)').matches);
+        }
+
+        toggle.onclick = toggleTheme;
+    }
+
+    // 初始化图表主题切换观察器
+    function initChartThemeObserver() {
+        const chartContainer = document.querySelector('.chart-container');
+        if (!chartContainer) return;
+
+        const observer = new MutationObserver((mutationsList) => {
+            for (const mutation of mutationsList) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    const resultContainer = document.getElementById("result-container");
+                    if (resultContainer && resultContainer.style.display === 'block') {
+                        const jValue = document.getElementById("j").value;
+                        const rsiValue = document.getElementById("rsi").value;
+
+                        if (jValue && rsiValue) {
+                            const onFadeOutComplete = (event) => {
+                                // 确保我们只在 opacity 动画结束后执行，避免其他动画触发
+                                if (event.propertyName !== 'opacity') {
+                                    return;
+                                }
+                                
+                                // 动画完成后，重绘图表
+                                drawChart(parseFloat(jValue), parseFloat(rsiValue));
+                                
+                                // 移除class，触发淡入动画
+                                chartContainer.classList.remove('chart-reloading');
+                            };
+                            
+                            // 使用 { once: true } 确保事件只触发一次后自动移除，防止内存泄漏
+                            chartContainer.addEventListener('transitionend', onFadeOutComplete, { once: true });
+                            
+                            // 添加 class 来触发淡出动画
+                            chartContainer.classList.add('chart-reloading');
+                        }
+                    }
+                }
+            }
+        });
+
+        // 观察documentElement元素上的class属性变化
+        observer.observe(document.documentElement, { attributes: true });
+    }
 
     // 初始化输入框处理器
     function initializeInputHandlers() {
@@ -637,40 +716,4 @@ ${analysis.suggestion}`;
 
     // 全局函数（保持向后兼容）
     window.judgeSignal = judgeSignal;
-
-// ====== 主题切换功能 ======
-    document.addEventListener('DOMContentLoaded', function() {
-        var toggle = document.getElementById('theme-toggle');
-        var emoji = document.getElementById('theme-emoji');
-        if (!toggle || !emoji) return;
-        var darkClass = 'dark-mode';
-        
-        function setTheme(dark) {
-            if (dark) {
-                document.documentElement.classList.add(darkClass);
-                emoji.textContent = '🌑'; // 新月
-            } else {
-                document.documentElement.classList.remove(darkClass);
-                emoji.textContent = '🌞';
-            }
-            // 主题切换后，如果图表已显示，则重绘
-            if (document.getElementById("result-container").style.display === 'block') {
-                const jValue = document.getElementById("j").value;
-                const rsiValue = document.getElementById("rsi").value;
-                if (jValue && rsiValue) {
-                    drawChart(parseFloat(jValue), parseFloat(rsiValue));
-                }
-            }
-        }
-        
-        // 修正初始逻辑：light 显示🌞，dark 显示🌑
-        var isDark = localStorage.getItem('theme') === 'dark';
-        setTheme(isDark);
-        
-        toggle.onclick = function() {
-            isDark = !isDark;
-            setTheme(isDark);
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        };
-    });
 })();
