@@ -470,128 +470,36 @@
         showToast(`目标收益率 ${targetRate}%，建议卖出价格：${targetSellPrice.toFixed(4)} 元`);
     }
     
-    // 显示提示信息 - iOS 18 通知样式
+    // 显示Toast提示
     function showToast(message) {
-        // 创建提示容器
-        const toastContainer = document.createElement('div');
-        toastContainer.className = 'ios-toast-container';
-        
-        // 创建提示内容
-        const toast = document.createElement('div');
-        toast.className = 'ios-toast';
-        
-        // 创建图标
-        const icon = document.createElement('div');
-        icon.className = 'ios-toast-icon';
-        icon.innerHTML = `
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" fill="currentColor"/>
-            </svg>
-        `;
-        
-        // 创建文本内容
-        const textContent = document.createElement('div');
-        textContent.className = 'ios-toast-text';
-        textContent.textContent = message;
-        
-        // 组装元素
-        toast.appendChild(icon);
-        toast.appendChild(textContent);
-        toastContainer.appendChild(toast);
-        
-        // 设置容器样式
-        toastContainer.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 10000;
-            pointer-events: none;
-            padding: env(safe-area-inset-top, 44px) 16px 0 16px;
-        `;
-        
-        // 设置Toast样式 - 使用更透明的毛玻璃效果
-        toast.style.cssText = `
-            background-color: rgba(248, 248, 252, 0.2);
-            -webkit-backdrop-filter: blur(14px);
-            backdrop-filter: blur(14px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 16px;
-            padding: 16px 20px;
-            margin: 0 auto;
-            max-width: 400px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
-            transform: translateY(-100px);
-            opacity: 0;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
-        `;
-        
-        // 设置图标样式
-        icon.style.cssText = `
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: #34C759;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            flex-shrink: 0;
-        `;
-        
-        // 设置文本样式
-        textContent.style.cssText = `
-            font-size: 15px;
-            font-weight: 500;
-            color: #1D1D1F;
-            line-height: 1.4;
-            flex: 1;
-        `;
-        
-        // 暗黑模式适配
-        if (document.body.classList.contains('dark-mode')) {
-            toast.style.backgroundColor = 'rgba(28, 28, 30, 0.2)';
-            toast.style.borderColor = 'rgba(84, 84, 88, 0.15)';
-            textContent.style.color = '#FFFFFF';
+        // 移除已存在的toast
+        const existingToast = document.querySelector('.toast');
+        if (existingToast) {
+            existingToast.remove();
         }
+
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.textContent = message;
         
-        document.body.appendChild(toastContainer);
-        
-        // 显示动画
-        setTimeout(function() {
-            toast.style.transform = 'translateY(0)';
+        document.body.appendChild(toast);
+
+        // 动画效果
+        setTimeout(() => {
             toast.style.opacity = '1';
-        }, 50);
-        
-        // 3.5秒后自动消失
-        setTimeout(function() {
-            toast.style.transform = 'translateY(-100px)';
+            toast.style.transform = 'translate(-50%, 0)';
+        }, 10);
+
+        // 3秒后自动移除
+        setTimeout(() => {
             toast.style.opacity = '0';
-            setTimeout(function() {
-                if (toastContainer.parentNode) {
-                    toastContainer.parentNode.removeChild(toastContainer);
+            toast.style.transform = 'translate(-50%, -10px)';
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
                 }
-            }, 400);
-        }, 3500);
-        
-        // 1秒后可点击消失
-        setTimeout(function() {
-            toastContainer.style.pointerEvents = 'auto';
-            toast.style.cursor = 'pointer';
-            toast.addEventListener('click', function() {
-                toast.style.transform = 'translateY(-100px)';
-                toast.style.opacity = '0';
-                setTimeout(function() {
-                    if (toastContainer.parentNode) {
-                        toastContainer.parentNode.removeChild(toastContainer);
-                    }
-                }, 400);
-            });
-        }, 1000);
+            }, 300);
+        }, 3000);
     }
 
     // 全局函数（保持向后兼容）
