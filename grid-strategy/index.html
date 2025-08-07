@@ -64,19 +64,46 @@
             
             <div class="advanced-content" id="advanced-content">
                 <div class="ios-form-group">
-                    <label for="maxOffset" class="ios-label">最大偏移比例</label>
+                    <label for="maxOffset" class="ios-label">
+                        最大偏移比例
+                        <div class="tips-container">
+                            <div class="tips-icon" data-tips="offset">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </label>
                     <input type="number" id="maxOffset" class="ios-input" placeholder="默认 0.1 (10%)" step="0.01" min="0" max="0.5" value="0.1">
                     <div class="input-hint">控制网格区间中心位置的最大偏移幅度</div>
                 </div>
                 
                 <div class="ios-form-group">
-                    <label for="maxScale" class="ios-label">最大缩放比例</label>
+                    <label for="maxScale" class="ios-label">
+                        最大缩放比例
+                        <div class="tips-container">
+                            <div class="tips-icon" data-tips="scale">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </label>
                     <input type="number" id="maxScale" class="ios-input" placeholder="默认 0.2 (20%)" step="0.01" min="0" max="1" value="0.2">
                     <div class="input-hint">控制网格区间宽度的最大扩展幅度</div>
                 </div>
 
                 <div class="ios-form-group">
-                    <label for="gridLevels" class="ios-label">网格层数</label>
+                    <label for="gridLevels" class="ios-label">
+                        网格层数
+                        <div class="tips-container">
+                            <div class="tips-icon" data-tips="levels">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </label>
                     <input type="number" id="gridLevels" class="ios-input" placeholder="默认 10 层" min="3" max="50" value="10">
                     <div class="input-hint">在调整后的区间内划分的网格层数</div>
                 </div>
@@ -152,6 +179,68 @@
 
     <div id="theme-toggle" style="text-align:center;margin:32px 0 0 0;cursor:pointer;font-size:1.7em;user-select:none;">
         <span id="theme-emoji" aria-label="切换暗黑/白天模式">🌙</span>
+    </div>
+
+    <!-- Tips 弹窗 -->
+    <div class="tips-popup" id="tips-offset">
+        <div class="tips-header">📍 偏移比例说明</div>
+        <div class="tips-content">
+            <p><strong>作用：</strong>控制网格区间中心位置的偏移</p>
+            <p><strong>计算：</strong>偏移 = ((RSI - 50) / 50) × 偏移比例</p>
+            <div class="tips-examples">
+                <div class="tips-example">
+                    <span class="example-label">RSI = 80：</span>
+                    <span class="example-value">向上偏移 6%</span>
+                </div>
+                <div class="tips-example">
+                    <span class="example-label">RSI = 20：</span>
+                    <span class="example-value">向下偏移 6%</span>
+                </div>
+            </div>
+            <p class="tips-note">💡 偏移比例越大，网格对 RSI 变化越敏感</p>
+        </div>
+    </div>
+
+    <div class="tips-popup" id="tips-scale">
+        <div class="tips-header">📏 缩放比例说明</div>
+        <div class="tips-content">
+            <p><strong>作用：</strong>控制网格区间宽度的扩展</p>
+            <p><strong>计算：</strong>缩放 = 1 + (|RSI - 50| / 50) × 缩放比例</p>
+            <div class="tips-examples">
+                <div class="tips-example">
+                    <span class="example-label">RSI = 80/20：</span>
+                    <span class="example-value">区间扩大 12%</span>
+                </div>
+                <div class="tips-example">
+                    <span class="example-label">RSI = 50：</span>
+                    <span class="example-value">区间不变</span>
+                </div>
+            </div>
+            <p class="tips-note">💡 RSI 越极端，网格越稀疏，避免密集亏损</p>
+        </div>
+    </div>
+
+    <div class="tips-popup" id="tips-levels">
+        <div class="tips-header">🎯 网格层数说明</div>
+        <div class="tips-content">
+            <p><strong>作用：</strong>在调整后区间内的网格划分数量</p>
+            <div class="tips-examples">
+                <div class="tips-example">
+                    <span class="example-label">层数多：</span>
+                    <span class="example-value">交易频繁，收益稳定</span>
+                </div>
+                <div class="tips-example">
+                    <span class="example-label">层数少：</span>
+                    <span class="example-value">交易稀疏，单次收益大</span>
+                </div>
+            </div>
+            <div class="tips-recommendations">
+                <div class="tips-rec-title">💡 推荐设置：</div>
+                <div class="tips-rec-item">新手：5-10 层</div>
+                <div class="tips-rec-item">进阶：10-20 层</div>
+                <div class="tips-rec-item">专业：20+ 层</div>
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>

@@ -193,6 +193,74 @@ function toggleTheme() {
     }
 }
 
+// Tips 功能
+function initTips() {
+    console.log('初始化 Tips 功能...');
+    const tipsIcons = document.querySelectorAll('.tips-icon');
+    console.log('找到 tips 图标数量:', tipsIcons.length);
+    
+    // 创建遮罩层
+    let overlay = document.querySelector('.tips-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.className = 'tips-overlay';
+        document.body.appendChild(overlay);
+    }
+    
+    tipsIcons.forEach((icon, index) => {
+        const tipsId = icon.getAttribute('data-tips');
+        console.log(`Tips ${index + 1}: data-tips="${tipsId}"`);
+        const popup = document.getElementById(`tips-${tipsId}`);
+        console.log(`对应的弹窗元素:`, popup);
+        
+        if (popup) {
+            // 点击显示 tips
+            icon.addEventListener('click', function(e) {
+                console.log(`点击了 tips 图标: ${tipsId}`);
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // 隐藏其他所有 tips
+                document.querySelectorAll('.tips-popup').forEach(p => {
+                    p.classList.remove('show');
+                });
+                overlay.classList.remove('show');
+                
+                // 显示当前 tips 和遮罩
+                popup.classList.add('show');
+                overlay.classList.add('show');
+                console.log(`显示 tips: ${tipsId}`);
+            });
+            
+            // 阻止 popup 内部点击事件冒泡
+            popup.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        } else {
+            console.error(`未找到 ID 为 tips-${tipsId} 的弹窗元素`);
+        }
+    });
+    
+    // 点击遮罩层隐藏所有 tips
+    overlay.addEventListener('click', function() {
+        console.log('点击遮罩层，隐藏所有 tips');
+        document.querySelectorAll('.tips-popup').forEach(popup => {
+            popup.classList.remove('show');
+        });
+        overlay.classList.remove('show');
+    });
+    
+    // ESC 键隐藏 tips
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.tips-popup').forEach(popup => {
+                popup.classList.remove('show');
+            });
+            overlay.classList.remove('show');
+        }
+    });
+}
+
 // 初始化
 document.addEventListener('DOMContentLoaded', function() {
     // 加载保存的主题
@@ -210,6 +278,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // 绑定事件
     document.getElementById('advanced-toggle').addEventListener('click', toggleAdvancedSettings);
     document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+    
+    // 初始化 Tips 功能
+    initTips();
     
     // RSI 输入实时更新指示器
     const rsiInput = document.getElementById('rsi');
