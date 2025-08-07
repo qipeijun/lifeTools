@@ -106,7 +106,7 @@ body.loading {
 .ios-input {
     width: 100%;
     padding: 16px;
-    border: 1px solid var(--border-color);
+    border: 0.5px solid var(--border-color);
     border-radius: 12px;
     font-size: 16px;
     background: var(--input-background);
@@ -117,7 +117,8 @@ body.loading {
 .ios-input:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+    border-width: 0.5px;
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.08);
 }
 
 .input-hint {
@@ -177,7 +178,7 @@ body.loading {
 
 /* 高级设置 */
 .advanced-settings {
-    border: 1px solid var(--border-color);
+    border: 0.5px solid var(--border-color);
     border-radius: 12px;
     overflow: hidden;
 }
@@ -209,16 +210,24 @@ body.loading {
 }
 
 .advanced-content {
-    max-height: 0;
     overflow: hidden;
-    transition: max-height 0.3s ease;
     background: var(--card-background);
+    max-height: 0;
+    opacity: 0;
+    padding: 0 16px;
+    transform: translateY(-8px);
+    transition: max-height 0.3s cubic-bezier(0.4, 0.0, 0.2, 1),
+                opacity 0.25s cubic-bezier(0.4, 0.0, 0.2, 1),
+                transform 0.25s cubic-bezier(0.4, 0.0, 0.2, 1),
+                padding 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 
 .advanced-content.show {
-    max-height: 500px;
+    max-height: 450px;
+    opacity: 1;
     padding: 16px;
-    border-top: 1px solid var(--border-color);
+    border-top: 0.5px solid var(--border-color);
+    transform: translateY(0);
 }
 
 /* 按钮 */
@@ -267,31 +276,62 @@ body.loading {
 }
 
 .ios-result-title {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 700;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
     text-align: center;
     color: var(--primary-color);
+    position: relative;
+}
+
+.ios-result-title::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 1px;
 }
 
 .ios-result-section {
-    margin-bottom: 24px;
-    padding: 16px;
+    margin-bottom: 20px;
+    padding: 20px;
     background: var(--input-background);
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    border: 0.5px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    transition: all 0.3s ease;
+}
+
+.ios-result-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
 .ios-result-section-title {
-    font-size: 16px;
+    font-size: 17px;
     font-weight: 600;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
     color: var(--text-primary);
+    display: flex;
+    align-items: center;
+}
+
+.ios-result-section-title::before {
+    content: '';
+    width: 4px;
+    height: 18px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 2px;
+    margin-right: 10px;
 }
 
 .ios-result-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 16px;
 }
 
@@ -378,9 +418,10 @@ body.loading {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 12px;
-    border-bottom: 1px solid var(--border-color);
-    font-size: 13px;
+    padding: 12px 16px;
+    border-bottom: 0.5px solid var(--border-color);
+    font-size: 14px;
+    transition: all 0.2s ease;
 }
 
 .grid-level:last-child {
@@ -388,49 +429,95 @@ body.loading {
 }
 
 .grid-level:nth-child(even) {
-    background: var(--background-color);
+    background: rgba(0, 122, 255, 0.02);
+}
+
+.grid-level:hover {
+    background: rgba(0, 122, 255, 0.05);
+    transform: translateX(4px);
 }
 
 .grid-level-index {
     font-weight: 600;
     color: var(--text-secondary);
-    min-width: 30px;
+    min-width: 35px;
+    font-size: 12px;
+    background: var(--background-color);
+    padding: 4px 8px;
+    border-radius: 6px;
 }
 
 .grid-level-price {
-    font-weight: 600;
+    font-weight: 700;
     color: var(--text-primary);
+    font-size: 15px;
+    flex: 1;
+    text-align: center;
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
 }
 
 .grid-level-type {
-    font-size: 11px;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-weight: 500;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    min-width: 50px;
+    text-align: center;
 }
 
 .grid-level-type.buy {
-    background: rgba(52, 199, 89, 0.1);
+    background: linear-gradient(135deg, rgba(52, 199, 89, 0.15), rgba(52, 199, 89, 0.08));
     color: var(--success-color);
+    border: 0.5px solid rgba(52, 199, 89, 0.2);
 }
 
 .grid-level-type.sell {
-    background: rgba(255, 59, 48, 0.1);
+    background: linear-gradient(135deg, rgba(255, 59, 48, 0.15), rgba(255, 59, 48, 0.08));
     color: var(--error-color);
+    border: 0.5px solid rgba(255, 59, 48, 0.2);
 }
 
 /* 策略建议 */
 .strategy-advice {
-    padding: 16px;
-    background: var(--background-color);
-    border-radius: 8px;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(0, 122, 255, 0.03), rgba(88, 86, 214, 0.02));
+    border-radius: 12px;
     border-left: 4px solid var(--primary-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.strategy-advice::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle, rgba(0, 122, 255, 0.1), transparent);
+    border-radius: 50%;
 }
 
 .advice-item {
-    margin-bottom: 8px;
+    margin-bottom: 14px;
     font-size: 14px;
-    line-height: 1.5;
+    line-height: 1.6;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    border-left: 3px solid transparent;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+[data-theme="dark"] .advice-item {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.advice-item:hover {
+    border-left-color: var(--primary-color);
+    transform: translateX(4px);
+    background: rgba(0, 122, 255, 0.05);
 }
 
 .advice-item:last-child {
@@ -438,8 +525,11 @@ body.loading {
 }
 
 .advice-highlight {
-    font-weight: 600;
+    font-weight: 700;
     color: var(--primary-color);
+    background: rgba(0, 122, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
 }
 
 /* 响应式设计 */
@@ -450,6 +540,7 @@ body.loading {
     
     .ios-card {
         padding: 20px;
+        border-radius: 12px;
     }
     
     .ios-title {
@@ -459,6 +550,47 @@ body.loading {
     .ios-result-grid {
         grid-template-columns: 1fr;
         gap: 12px;
+    }
+    
+    .ios-result-section {
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+    
+    .grid-level {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+    
+    .grid-level-price {
+        font-size: 14px;
+    }
+    
+    .advice-item {
+        padding: 6px 10px;
+        font-size: 13px;
+    }
+    
+    .strategy-advice {
+        padding: 16px;
+    }
+}
+
+@media (max-width: 360px) {
+    .ios-card {
+        padding: 16px;
+    }
+    
+    .ios-title {
+        font-size: 22px;
+    }
+    
+    .ios-result-item-value {
+        font-size: 16px;
+    }
+    
+    .ios-result-item-value.main-value {
+        font-size: 18px;
     }
 }
 
@@ -645,18 +777,73 @@ body.loading {
 /* 响应式调整 */
 @media (max-width: 480px) {
     .tips-popup {
-        width: 260px;
-        left: 0;
-        transform: none;
-        margin-left: -120px;
+        width: calc(100vw - 40px);
+        max-width: 320px;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%) scale(0.9);
+        margin: 0;
     }
     
     .tips-popup.show {
-        transform: none;
+        transform: translate(-50%, -50%) scale(1);
     }
     
-    .tips-popup::before {
-        left: 130px;
+    .tips-header {
+        padding: 14px 16px 6px 16px;
+        font-size: 13px;
+    }
+    
+    .tips-content {
+        padding: 10px 16px 14px 16px;
+        font-size: 12px;
+    }
+    
+    .tips-examples {
+        margin: 10px 0;
+        padding: 6px;
+    }
+    
+    .tips-example {
+        font-size: 11px;
+        margin-bottom: 3px;
+    }
+    
+    .tips-note {
+        margin-top: 6px;
+        padding: 4px 6px;
+        font-size: 11px !important;
+    }
+    
+    .tips-recommendations {
+        margin-top: 6px;
+        padding: 6px;
+    }
+    
+    .tips-rec-title {
+        font-size: 11px;
+        margin-bottom: 4px;
+    }
+    
+    .tips-rec-item {
+        font-size: 10px;
+        margin-bottom: 1px;
+    }
+}
+
+@media (max-width: 360px) {
+    .tips-popup {
+        width: calc(100vw - 30px);
+    }
+    
+    .tips-header {
+        padding: 12px 14px 4px 14px;
+        font-size: 12px;
+    }
+    
+    .tips-content {
+        padding: 8px 14px 12px 14px;
+        font-size: 11px;
     }
 }
 

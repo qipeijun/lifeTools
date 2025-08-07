@@ -168,13 +168,32 @@ function calculateGrid() {
     resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-// 高级设置切换
+// 高级设置切换 - 简化版本，让CSS完全控制动画
 function toggleAdvancedSettings() {
     const toggle = document.getElementById('advanced-toggle');
     const content = document.getElementById('advanced-content');
     
     toggle.classList.toggle('active');
-    content.classList.toggle('show');
+    
+    if (content.classList.contains('show')) {
+        // 收起
+        content.classList.add('animating');
+        content.classList.remove('show');
+        
+        // 清理动画类
+        setTimeout(() => {
+            content.classList.remove('animating');
+        }, 350);
+    } else {
+        // 展开
+        content.classList.add('animating');
+        content.classList.add('show');
+        
+        // 清理动画类
+        setTimeout(() => {
+            content.classList.remove('animating');
+        }, 350);
+    }
 }
 
 // 主题切换
@@ -261,6 +280,36 @@ function initTips() {
     });
 }
 
+// 缓存功能
+function saveInputValues() {
+    const inputs = {
+        rsi: document.getElementById('rsi').value,
+        bollUpper: document.getElementById('bollUpper').value,
+        bollLower: document.getElementById('bollLower').value,
+        maxOffset: document.getElementById('maxOffset').value,
+        maxScale: document.getElementById('maxScale').value,
+        gridLevels: document.getElementById('gridLevels').value
+    };
+    localStorage.setItem('gridStrategyInputs', JSON.stringify(inputs));
+}
+
+function loadInputValues() {
+    const saved = localStorage.getItem('gridStrategyInputs');
+    if (saved) {
+        try {
+            const inputs = JSON.parse(saved);
+            Object.keys(inputs).forEach(key => {
+                const element = document.getElementById(key);
+                if (element && inputs[key]) {
+                    element.value = inputs[key];
+                }
+            });
+        } catch (e) {
+            console.log('加载缓存数据失败:', e);
+        }
+    }
+}
+
 // 初始化
 document.addEventListener('DOMContentLoaded', function() {
     // 加载保存的主题
@@ -269,6 +318,9 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.setAttribute('data-theme', 'dark');
         document.getElementById('theme-emoji').textContent = '☀️';
     }
+    
+    // 加载缓存的输入值
+    loadInputValues();
     
     // 移除加载状态
     setTimeout(() => {
@@ -289,12 +341,17 @@ document.addEventListener('DOMContentLoaded', function() {
         updateRSIIndicator(rsi);
     });
     
-    // 初始化 RSI 指示器
-    updateRSIIndicator(50);
+    // 获取当前RSI值并初始化指示器
+    const currentRsi = parseFloat(document.getElementById('rsi').value) || 50;
+    updateRSIIndicator(currentRsi);
     
-    // 输入验证
+    // 为所有输入框添加缓存保存功能和输入验证
     const inputs = document.querySelectorAll('.ios-input');
     inputs.forEach(input => {
+        input.addEventListener('input', saveInputValues);
+        input.addEventListener('change', saveInputValues);
+        
+        // 输入验证
         input.addEventListener('blur', function() {
             if (this.type === 'number') {
                 const min = parseFloat(this.min);
@@ -319,5 +376,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// 导出函数供全局使用
-window.calculateGrid = calculateGrid;
+// 确保函数在全局作用域可用
+if (typeof window !== 'undefined') {
+    window.calculateGrid = calculateGrid;
+    window.toggleAdvancedSettings = toggleAdvancedSettings;
+    window.toggleTheme = toggleTheme;
+}
