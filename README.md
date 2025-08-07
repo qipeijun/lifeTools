@@ -4,44 +4,113 @@
 
 [在线访问](https://qipeijun.github.io/lifeTools/doujiang/)
 
-豆浆预约助手：帮你根据想喝豆浆的时间和制作时长，智能计算预约时间，支持手机和PC，界面简洁。
+智能豆浆预约时间计算器，帮你精确计算豆浆机预约时间，让你在想要的时间喝到热腾腾的豆浆。
+
+**主要功能：**
+- 智能时间计算：根据期望饮用时间和制作时长自动计算预约时间
+- 多种制作时长预设：支持常见的豆浆制作时间选择
+- 实时时间显示：显示当前时间，方便对比
+
+**使用场景：**
+- 早晨起床想喝热豆浆
+- 下班回家准备晚餐
+- 任何需要定时制作豆浆的场合
 
 **扫码访问：**
 <p>
   <img src="./images/doujiang-qr.jpg" alt="豆浆预约助手" width="180" />
 </p>
 
+## KDJ-RSI 技术分析工具
 
-## KDJ-RSI工具
+专业的股票技术分析工具，结合 KDJ 和 RSI 两大经典指标，为投资决策提供数据支持。
 
-
-
-KDJ + RSI 智能判断
-KDJ-RSI工具1.0
+### KDJ-RSI 工具 1.0
 
 [在线访问](https://qipeijun.github.io/lifeTools/kdjrsi/)
 
+基础版本的 KDJ + RSI 分析工具，提供核心的技术指标计算和分析功能。
+
+**主要功能：**
+- KDJ 指标计算（K值、D值、J值）
+- RSI 相对强弱指标计算
+- 买卖信号提示
+- 图表可视化展示
+- 实时数据更新
+
 **扫码访问：**
 <p>
-  <img src="./images/kdj-qr.png" alt="KDJ-RSI工具" width="180" />
+  <img src="./images/kdj-qr.png" alt="KDJ-RSI工具1.0" width="180" />
 </p>
-KDJ-RSI工具2.0
 
-[在线访问2.0](https://qipeijun.github.io/lifeTools/kdjrsi/index_2.html)
+### KDJ-RSI 工具 2.0
+
+[在线访问](https://qipeijun.github.io/lifeTools/kdjrsi/index_2.html)
+
+升级版本，增强了用户体验和分析功能，提供更专业的技术分析支持。
+
+**新增功能：**
+- 优化的界面设计
+- 更精确的指标计算
+- 增强的信号识别
+- 历史数据对比
+- 多时间周期分析
+- 风险提示功能
 
 **扫码访问：**
 <p>
-  <img src="./images/kdj2.png" alt="KDJ-RSI工具" width="180" />
+  <img src="./images/kdj2.png" alt="KDJ-RSI工具2.0" width="180" />
 </p>
 
-
-## 做T利润计算
+## 做T利润计算器
 
 [在线访问](https://qipeijun.github.io/lifeTools/buysell/)
 
-做T利润计算器
+专业的股票做T（T+0交易）利润计算工具，帮助投资者精确计算做T操作的盈亏情况。
+
+**主要功能：**
+- 精确利润计算：考虑手续费、印花税等所有交易成本
+- 多种交易模式：支持买入做T和卖出做T两种操作
+- 实时收益率显示：直观展示投资回报率
+- 成本分析：详细展示各项交易费用
+
+**适用场景：**
+- 股票日内T+0交易
+- ETF套利操作
+- 可转债T+0交易
+- 其他短线交易策略
+
+**计算项目：**
+- 买入成本（含手续费）
+- 卖出收入（扣除手续费和印花税）
+- 净利润/亏损
+- 收益率百分比
 
 **扫码访问：**
 <p>
   <img src="./images/buysell.png" alt="做T利润计算器" width="180" />
+</p>
+
+## ETH网格策略计算器
+
+[在线访问](https://qipeijun.github.io/lifeTools/grid-strategy/)
+
+基于 RSI + 布林带的动态网格区间优化策略计算器，采用 iOS 风格设计，支持：
+- 智能网格区间调整（基于 RSI 指标动态偏移和缩放）
+- 实时策略建议和风险提示
+- 可视化网格层级分布
+- 响应式设计，完美适配移动端
+- 暗黑/白天主题切换
+- 详细参数说明和使用提示
+
+**主要功能：**
+- RSI 指标输入与可视化指示器
+- 布林带上下轨设置
+- 高级参数配置（偏移比例、缩放比例、网格层数）
+- 动态网格计算和结果展示
+- 智能策略建议生成
+
+**扫码访问：**
+<p>
+  <img src="./images/grid-strategy-qr.png" alt="ETH网格策略计算器" width="180" />
 </p>
