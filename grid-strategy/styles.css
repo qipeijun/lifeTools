@@ -331,29 +331,49 @@ body.loading {
 
 .ios-result-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 16px;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 12px;
 }
 
 .ios-result-item {
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 12px;
+    background: rgba(0, 122, 255, 0.03);
+    border-radius: 12px;
+    border: 0.5px solid rgba(0, 122, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.ios-result-item:hover {
+    background: rgba(0, 122, 255, 0.06);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.1);
 }
 
 .ios-result-item-label {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--text-secondary);
-    margin-bottom: 4px;
+    margin-bottom: 8px;
+    font-weight: 500;
+    text-align: center;
 }
 
 .ios-result-item-value {
-    font-size: 18px;
-    font-weight: 600;
+    font-size: 20px;
+    font-weight: 700;
     color: var(--text-primary);
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+    text-align: center;
 }
 
 .ios-result-item-value.main-value {
-    font-size: 20px;
+    font-size: 22px;
     color: var(--primary-color);
+    text-shadow: 0 1px 2px rgba(0, 122, 255, 0.1);
 }
 
 .ios-result-details {
@@ -686,7 +706,7 @@ body.loading {
 
 .tips-header {
     padding: 16px 16px 8px 16px;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 600;
     color: var(--primary-color);
     border-bottom: 1px solid var(--border-color);
@@ -694,12 +714,12 @@ body.loading {
 
 .tips-content {
     padding: 12px 16px 16px 16px;
-    font-size: 13px;
-    line-height: 1.5;
+    font-size: 15px;
+    line-height: 1.6;
 }
 
 .tips-content p {
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     color: var(--text-primary);
 }
 
@@ -709,17 +729,17 @@ body.loading {
 
 .tips-examples {
     margin: 12px 0;
-    padding: 8px;
+    padding: 10px;
     background: var(--background-color);
-    border-radius: 6px;
+    border-radius: 8px;
 }
 
 .tips-example {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 4px;
-    font-size: 12px;
+    margin-bottom: 6px;
+    font-size: 14px;
 }
 
 .tips-example:last-child {
@@ -737,34 +757,36 @@ body.loading {
 }
 
 .tips-note {
-    margin-top: 8px;
-    padding: 6px 8px;
+    margin-top: 10px;
+    padding: 8px 10px;
     background: rgba(0, 122, 255, 0.1);
-    border-radius: 6px;
-    font-size: 12px !important;
+    border-radius: 8px;
+    font-size: 14px !important;
     color: var(--primary-color) !important;
+    line-height: 1.5;
 }
 
 .tips-recommendations {
-    margin-top: 8px;
-    padding: 8px;
+    margin-top: 10px;
+    padding: 10px;
     background: var(--background-color);
-    border-radius: 6px;
+    border-radius: 8px;
 }
 
 .tips-rec-title {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--text-primary);
-    margin-bottom: 6px;
+    margin-bottom: 8px;
 }
 
 .tips-rec-item {
-    font-size: 11px;
+    font-size: 13px;
     color: var(--text-secondary);
-    margin-bottom: 2px;
-    padding-left: 8px;
+    margin-bottom: 4px;
+    padding-left: 10px;
     position: relative;
+    line-height: 1.4;
 }
 
 .tips-rec-item::before {
@@ -790,44 +812,44 @@ body.loading {
     }
     
     .tips-header {
-        padding: 14px 16px 6px 16px;
-        font-size: 13px;
+        padding: 16px 16px 8px 16px;
+        font-size: 15px;
     }
     
     .tips-content {
-        padding: 10px 16px 14px 16px;
-        font-size: 12px;
+        padding: 12px 16px 16px 16px;
+        font-size: 14px;
     }
     
     .tips-examples {
         margin: 10px 0;
-        padding: 6px;
+        padding: 8px;
     }
     
     .tips-example {
-        font-size: 11px;
-        margin-bottom: 3px;
-    }
-    
-    .tips-note {
-        margin-top: 6px;
-        padding: 4px 6px;
-        font-size: 11px !important;
-    }
-    
-    .tips-recommendations {
-        margin-top: 6px;
-        padding: 6px;
-    }
-    
-    .tips-rec-title {
-        font-size: 11px;
+        font-size: 13px;
         margin-bottom: 4px;
     }
     
+    .tips-note {
+        margin-top: 8px;
+        padding: 6px 8px;
+        font-size: 13px !important;
+    }
+    
+    .tips-recommendations {
+        margin-top: 8px;
+        padding: 8px;
+    }
+    
+    .tips-rec-title {
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
+    
     .tips-rec-item {
-        font-size: 10px;
-        margin-bottom: 1px;
+        font-size: 12px;
+        margin-bottom: 3px;
     }
 }
 
@@ -837,12 +859,28 @@ body.loading {
     }
     
     .tips-header {
-        padding: 12px 14px 4px 14px;
-        font-size: 12px;
+        padding: 14px 16px 6px 16px;
+        font-size: 14px;
     }
     
     .tips-content {
-        padding: 8px 14px 12px 14px;
+        padding: 10px 16px 14px 16px;
+        font-size: 13px;
+    }
+    
+    .tips-example {
+        font-size: 12px;
+    }
+    
+    .tips-note {
+        font-size: 12px !important;
+    }
+    
+    .tips-rec-title {
+        font-size: 12px;
+    }
+    
+    .tips-rec-item {
         font-size: 11px;
     }
 }
