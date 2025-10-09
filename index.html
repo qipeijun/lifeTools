@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="实用工具集合 - 投资理财工具和生活助手">
+    <meta name="keywords" content="KDJ,RSI,做T计算器,网格策略,豆浆预约">
+    <meta name="theme-color" content="#F2F2F7">
+    <title>生活工具集</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --bg-primary: #F2F2F7;
+            --bg-card: #FFFFFF;
+            --text-primary: #000000;
+            --text-secondary: #6E6E73;
+            --text-tertiary: #86868B;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #000000;
+            --bg-card: #1C1C1E;
+            --text-primary: #F5F5F7;
+            --text-secondary: #AEAEB2;
+            --text-tertiary: #6E6E73;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.47059;
+            overflow-x: hidden;
+            transition: background 0.3s ease;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            user-select: none;
+        }
+
+        body.loading {
+            opacity: 0;
+        }
+
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 0 16px 60px;
+        }
+
+        /* 头部 */
+        .header {
+            text-align: center;
+            padding: 52px 0 32px;
+        }
+
+        .header h1 {
+            font-size: 40px;
+            font-weight: 700;
+            letter-spacing: -0.005em;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .header p {
+            font-size: 17px;
+            color: var(--text-secondary);
+            font-weight: 400;
+            letter-spacing: -0.022em;
+        }
+
+        /* 分类标题 */
+        .category {
+            margin: 32px 0 12px;
+            padding: 0 4px;
+        }
+
+        .category h2 {
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: 0.007em;
+            color: var(--text-primary);
+        }
+
+        /* 工具卡片 - Apple Music/TV 风格 */
+        .tool-card {
+            position: relative;
+            height: 200px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            background: var(--bg-card);
+            transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .tool-card:active {
+            transform: scale(0.98);
+        }
+
+        /* 卡片背景层 */
+        .card-artwork {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.3s ease;
+        }
+
+        /* 渐变叠加 */
+        .card-gradient {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 100%);
+        }
+
+        [data-theme="dark"] .card-gradient {
+            background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 100%);
+        }
+
+        /* 卡片内容 */
+        .card-content {
+            position: relative;
+            height: 100%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            z-index: 2;
+        }
+
+        .card-title {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.003em;
+            color: #FFFFFF;
+            margin-bottom: 4px;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-subtitle {
+            font-size: 15px;
+            font-weight: 400;
+            letter-spacing: -0.024em;
+            color: rgba(255, 255, 255, 0.92);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+        }
+
+        /* 版本标签 */
+        .version-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            color: #FFFFFF;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            z-index: 3;
+        }
+
+        /* 各个卡片的背景 */
+        .card-kdj .card-artwork {
+            background: linear-gradient(135deg, #0A84FF 0%, #0051D5 100%);
+        }
+
+        .card-kdj-2 .card-artwork {
+            background: linear-gradient(135deg, #5E5CE6 0%, #3634A3 100%);
+        }
+
+        .card-buysell .card-artwork {
+            background: linear-gradient(135deg, #30D158 0%, #248A3D 100%);
+        }
+
+        .card-grid .card-artwork {
+            background: linear-gradient(135deg, #BF5AF2 0%, #7D3AC1 100%);
+        }
+
+        .card-doujiang .card-artwork {
+            background: linear-gradient(135deg, #FF9F0A 0%, #C77700 100%);
+        }
+
+        /* 暗色模式调整 */
+        [data-theme="dark"] .card-kdj .card-artwork {
+            background: linear-gradient(135deg, #0A84FF 0%, #0051D5 100%);
+        }
+
+        [data-theme="dark"] .card-kdj-2 .card-artwork {
+            background: linear-gradient(135deg, #5E5CE6 0%, #3634A3 100%);
+        }
+
+        [data-theme="dark"] .card-buysell .card-artwork {
+            background: linear-gradient(135deg, #32D74B 0%, #248A3D 100%);
+        }
+
+        [data-theme="dark"] .card-grid .card-artwork {
+            background: linear-gradient(135deg, #BF5AF2 0%, #7D3AC1 100%);
+        }
+
+        [data-theme="dark"] .card-doujiang .card-artwork {
+            background: linear-gradient(135deg, #FF9F0A 0%, #C77700 100%);
+        }
+
+        /* 背景装饰图标 - 极简风格 */
+        .card-icon {
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        /* 页脚 */
+        .footer {
+            text-align: center;
+            padding: 40px 0 20px;
+            color: var(--text-tertiary);
+            font-size: 12px;
+            letter-spacing: -0.01em;
+        }
+
+        /* 主题切换 */
+        #theme-toggle {
+            text-align: center;
+            margin: 32px 0 0 0;
+            cursor: pointer;
+            font-size: 1.7em;
+            user-select: none;
+            padding: 20px;
+            transition: transform 0.2s ease;
+        }
+
+        #theme-toggle:active {
+            transform: scale(0.88);
+        }
+
+        /* 加载动画 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            opacity: 0;
+        }
+
+        /* 响应式 */
+        @media (min-width: 768px) {
+            .container {
+                padding: 0 24px 80px;
+            }
+
+            .header {
+                padding: 72px 0 48px;
+            }
+
+            .header h1 {
+                font-size: 48px;
+            }
+
+            .header p {
+                font-size: 19px;
+            }
+
+            .tool-card {
+                height: 220px;
+                margin-bottom: 16px;
+            }
+
+            .card-title {
+                font-size: 32px;
+            }
+
+            .card-subtitle {
+                font-size: 17px;
+            }
+        }
+
+        /* 防止iOS缩放 */
+        @media screen and (max-width: 768px) {
+            select, textarea, input[type="text"], input[type="password"],
+            input[type="datetime"], input[type="datetime-local"],
+            input[type="date"], input[type="month"], input[type="time"],
+            input[type="week"], input[type="number"], input[type="email"],
+            input[type="url"] {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body class="loading">
+    <div class="container">
+        <header class="header">
+            <h1>工具集</h1>
+            <p>让投资更智能，让生活更便捷</p>
+        </header>
+
+        <section>
+            <div class="category">
+                <h2>投资理财</h2>
+            </div>
+
+            <!-- KDJ-RSI 分析工具 -->
+            <a href="kdjrsi/index.html" class="tool-card card-kdj animate-in" style="animation-delay: 0.05s">
+                <div class="card-artwork"></div>
+                <div class="card-gradient"></div>
+                <svg class="card-icon" width="140" height="140" viewBox="0 0 140 140" fill="none">
+                    <rect x="20" y="60" width="12" height="40" rx="2" fill="white" opacity="0.4"/>
+                    <rect x="42" y="45" width="12" height="55" rx="2" fill="white" opacity="0.4"/>
+                    <rect x="64" y="55" width="12" height="45" rx="2" fill="white" opacity="0.4"/>
+                    <rect x="86" y="35" width="12" height="65" rx="2" fill="white" opacity="0.4"/>
+                    <path d="M 10 90 Q 40 75, 70 55 T 130 20" stroke="white" stroke-width="3" fill="none" opacity="0.5"/>
+                </svg>
+                <div class="card-content">
+                    <div class="card-title">KDJ + RSI</div>
+                    <div class="card-subtitle">技术指标智能分析</div>
+                </div>
+            </a>
+
+            <!-- KDJ-RSI 2.0 -->
+            <a href="kdjrsi/index_2.html" class="tool-card card-kdj-2 animate-in" style="animation-delay: 0.1s">
+                <div class="card-artwork"></div>
+                <div class="card-gradient"></div>
+                <span class="version-badge">Pro</span>
+                <svg class="card-icon" width="140" height="140" viewBox="0 0 140 140" fill="none">
+                    <rect x="15" y="55" width="10" height="50" rx="2" fill="white" opacity="0.35"/>
+                    <rect x="32" y="40" width="10" height="65" rx="2" fill="white" opacity="0.35"/>
+                    <rect x="49" y="60" width="10" height="45" rx="2" fill="white" opacity="0.35"/>
+                    <rect x="66" y="30" width="10" height="75" rx="2" fill="white" opacity="0.35"/>
+                    <rect x="83" y="50" width="10" height="55" rx="2" fill="white" opacity="0.35"/>
+                    <path d="M 0 95 Q 35 80, 70 50 T 140 15" stroke="white" stroke-width="2.5" fill="none" opacity="0.45"/>
+                </svg>
+                <div class="card-content">
+                    <div class="card-title">KDJ + RSI 2.0</div>
+                    <div class="card-subtitle">增强版分析工具</div>
+                </div>
+            </a>
+
+            <!-- 做T利润计算器 -->
+            <a href="buysell/index.html" class="tool-card card-buysell animate-in" style="animation-delay: 0.15s">
+                <div class="card-artwork"></div>
+                <div class="card-gradient"></div>
+                <svg class="card-icon" width="140" height="140" viewBox="0 0 140 140" fill="none">
+                    <circle cx="70" cy="70" r="45" stroke="white" stroke-width="3" fill="none" opacity="0.3"/>
+                    <path d="M 70 35 L 70 70 M 70 35 L 60 45 M 70 35 L 80 45" stroke="white" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
+                    <path d="M 70 105 L 70 70 M 70 105 L 60 95 M 70 105 L 80 95" stroke="white" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
+                    <text x="70" y="78" font-size="32" fill="white" opacity="0.4" text-anchor="middle" font-weight="600">¥</text>
+                </svg>
+                <div class="card-content">
+                    <div class="card-title">做T计算器</div>
+                    <div class="card-subtitle">精准计算交易成本</div>
+                </div>
+            </a>
+
+            <!-- ETH网格策略 -->
+            <a href="grid-strategy/index.html" class="tool-card card-grid animate-in" style="animation-delay: 0.2s">
+                <div class="card-artwork"></div>
+                <div class="card-gradient"></div>
+                <svg class="card-icon" width="140" height="140" viewBox="0 0 140 140" fill="none">
+                    <line x1="0" y1="30" x2="140" y2="30" stroke="white" stroke-width="1.5" opacity="0.25"/>
+                    <line x1="0" y1="60" x2="140" y2="60" stroke="white" stroke-width="1.5" opacity="0.25"/>
+                    <line x1="0" y1="90" x2="140" y2="90" stroke="white" stroke-width="1.5" opacity="0.25"/>
+                    <line x1="30" y1="0" x2="30" y2="140" stroke="white" stroke-width="1.5" opacity="0.25"/>
+                    <line x1="60" y1="0" x2="60" y2="140" stroke="white" stroke-width="1.5" opacity="0.25"/>
+                    <line x1="90" y1="0" x2="90" y2="140" stroke="white" stroke-width="1.5" opacity="0.25"/>
+                    <path d="M 70 25 L 95 55 L 70 95 L 45 55 Z" stroke="white" stroke-width="2.5" fill="white" fill-opacity="0.2" opacity="0.5"/>
+                </svg>
+                <div class="card-content">
+                    <div class="card-title">ETH 网格策略</div>
+                    <div class="card-subtitle">动态区间智能优化</div>
+                </div>
+            </a>
+        </section>
+
+        <section>
+            <div class="category">
+                <h2>生活助手</h2>
+            </div>
+
+            <!-- 豆浆预约助手 -->
+            <a href="doujiang/index.html" class="tool-card card-doujiang animate-in" style="animation-delay: 0.25s">
+                <div class="card-artwork"></div>
+                <div class="card-gradient"></div>
+                <svg class="card-icon" width="140" height="140" viewBox="0 0 140 140" fill="none">
+                    <ellipse cx="70" cy="45" rx="35" ry="8" fill="white" opacity="0.3"/>
+                    <rect x="35" y="45" width="70" height="55" rx="8" fill="white" opacity="0.35"/>
+                    <ellipse cx="70" cy="100" rx="35" ry="8" fill="white" opacity="0.3"/>
+                    <path d="M 52 35 Q 48 20, 52 5" stroke="white" stroke-width="3" stroke-linecap="round" opacity="0.4"/>
+                    <path d="M 70 30 Q 66 15, 70 0" stroke="white" stroke-width="3.5" stroke-linecap="round" opacity="0.45"/>
+                    <path d="M 88 35 Q 92 20, 88 5" stroke="white" stroke-width="3" stroke-linecap="round" opacity="0.4"/>
+                    <circle cx="105" cy="105" r="18" stroke="white" stroke-width="2.5" fill="none" opacity="0.35"/>
+                    <line x1="105" y1="105" x2="105" y2="93" stroke="white" stroke-width="2" opacity="0.4"/>
+                    <line x1="105" y1="105" x2="113" y2="105" stroke="white" stroke-width="2" opacity="0.4"/>
+                </svg>
+                <div class="card-content">
+                    <div class="card-title">豆浆助手</div>
+                    <div class="card-subtitle">精准时间计算</div>
+                </div>
+            </a>
+        </section>
+
+        <footer class="footer">
+            <p>© 2025 · Made with ❤️</p>
+        </footer>
+    </div>
+
+    <div id="theme-toggle">
+        <span id="theme-emoji" aria-label="切换主题">🌞</span>
+    </div>
+
+    <script>
+        // 页面加载
+        window.addEventListener('load', () => {
+            document.body.classList.remove('loading');
+            document.body.style.opacity = '1';
+        });
+
+        // 主题切换
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeEmoji = document.getElementById('theme-emoji');
+        const html = document.documentElement;
+
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        if (savedTheme === 'dark') {
+            html.setAttribute('data-theme', 'dark');
+            themeEmoji.textContent = '🌙';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            themeEmoji.textContent = newTheme === 'dark' ? '🌙' : '🌞';
+        });
+
+        // 触摸反馈优化
+        document.querySelectorAll('.tool-card').forEach(card => {
+            card.addEventListener('touchstart', () => {
+                card.style.transition = 'transform 0.1s ease-out';
+            }, { passive: true });
+            
+            card.addEventListener('touchend', () => {
+                setTimeout(() => {
+                    card.style.transition = 'transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                }, 50);
+            }, { passive: true });
+        });
+    </script>
+</body>
+</html>
