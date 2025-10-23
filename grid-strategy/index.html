@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ETH网格策略计算器</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="loading">
+    <div class="ios-card">
+        <h1 class="ios-title">ETH 网格策略计算器</h1>
+        <p class="ios-subtitle">基于 RSI + 布林带的动态网格区间优化</p>
+
+        <div class="ios-form-group">
+            <label for="rsi" class="ios-label">
+                <svg class="ios-label-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+                </svg>
+                RSI 指标值
+            </label>
+            <input type="number" id="rsi" class="ios-input" placeholder="输入 RSI 值 (0-100)" min="0" max="100" step="0.1" value="50">
+            <div class="rsi-indicator">
+                <div class="rsi-bar">
+                    <div class="rsi-fill" id="rsi-fill"></div>
+                    <div class="rsi-zones">
+                        <span class="zone-label oversold">超卖 ≤20</span>
+                        <span class="zone-label neutral">中性 20-80</span>
+                        <span class="zone-label overbought">超买 ≥80</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ios-form-group">
+            <label for="bollUpper" class="ios-label">
+                <svg class="ios-label-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 11.25l-3-3m0 0l-3 3m3-3v7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                布林带上轨
+            </label>
+            <input type="number" id="bollUpper" class="ios-input" placeholder="输入布林带上轨价格" step="0.01" value="3800">
+        </div>
+
+        <div class="ios-form-group">
+            <label for="bollLower" class="ios-label">
+                <svg class="ios-label-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75l3 3m0 0l3-3m-3 3v-7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                布林带下轨
+            </label>
+            <input type="number" id="bollLower" class="ios-input" placeholder="输入布林带下轨价格" step="0.01" value="3200">
+        </div>
+
+        <div class="ios-form-group advanced-settings">
+            <div class="advanced-toggle" id="advanced-toggle">
+                <svg class="ios-label-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.438.995s.145.755.438.995l1.003.827c.48.398.668 1.03.26 1.431l-1.296 2.247a1.125 1.125 0 01-1.37.49l-1.217-.456c-.355-.133-.75-.072-1.075.124a6.57 6.57 0 01-.22.127c-.331.183-.581.495-.645.87l-.213 1.281c-.09.543-.56.94-1.11.94h-2.593c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.313-.686-.645-.87a6.52 6.52 0 01-.22-.127c-.324-.196-.72-.257-1.075-.124l-1.217.456a1.125 1.125 0 01-1.37-.49l-1.296-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.437-.995s-.145-.755-.437-.995l-1.004-.827a1.125 1.125 0 01-.26-1.431l1.296-2.247a1.125 1.125 0 011.37-.49l1.217.456c.355.133.75.072 1.075-.124.073-.044.146-.087.22-.127.332-.183.582-.495.645-.87l.213-1.281z" />
+                </svg>
+                高级参数设置
+                <svg class="chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                </svg>
+            </div>
+            
+            <div class="advanced-content" id="advanced-content">
+                <div class="ios-form-group">
+                    <label for="maxOffset" class="ios-label">
+                        最大偏移比例
+                        <div class="tips-container">
+                            <div class="tips-icon" data-tips="offset">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </label>
+                    <input type="number" id="maxOffset" class="ios-input" placeholder="默认 0.1 (10%)" step="0.01" min="0" max="0.5" value="0.1">
+                    <div class="input-hint">控制网格区间中心位置的最大偏移幅度</div>
+                </div>
+                
+                <div class="ios-form-group">
+                    <label for="maxScale" class="ios-label">
+                        最大缩放比例
+                        <div class="tips-container">
+                            <div class="tips-icon" data-tips="scale">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </label>
+                    <input type="number" id="maxScale" class="ios-input" placeholder="默认 0.2 (20%)" step="0.01" min="0" max="1" value="0.2">
+                    <div class="input-hint">控制网格区间宽度的最大扩展幅度</div>
+                </div>
+
+                <div class="ios-form-group">
+                    <label for="gridLevels" class="ios-label">
+                        网格层数
+                        <div class="tips-container">
+                            <div class="tips-icon" data-tips="levels">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </label>
+                    <input type="number" id="gridLevels" class="ios-input" placeholder="默认 10 层" min="3" max="50" value="10">
+                    <div class="input-hint">在调整后的区间内划分的网格层数</div>
+                </div>
+            </div>
+        </div>
+
+        <button class="ios-button" id="calculate-btn" onclick="calculateGrid()">
+            <span>计算网格策略</span>
+        </button>
+
+        <div id="result-container" class="ios-result">
+            <div class="ios-result-title">策略结果</div>
+            
+            <!-- 核心指标组 -->
+            <div class="ios-result-section">
+                <div class="ios-result-section-title">动态调整结果</div>
+                <div class="ios-result-grid">
+                    <div class="ios-result-item">
+                        <div class="ios-result-item-label">调整后上限</div>
+                        <div id="adjusted-upper" class="ios-result-item-value main-value">0.00</div>
+                    </div>
+                    <div class="ios-result-item">
+                        <div class="ios-result-item-label">调整后下限</div>
+                        <div id="adjusted-lower" class="ios-result-item-value main-value">0.00</div>
+                    </div>
+                    <div class="ios-result-item">
+                        <div class="ios-result-item-label">区间宽度</div>
+                        <div id="adjusted-width" class="ios-result-item-value">0.00</div>
+                    </div>
+                    <div class="ios-result-item">
+                        <div class="ios-result-item-label">网格间距</div>
+                        <div id="grid-spacing" class="ios-result-item-value">0.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 调整参数组 -->
+            <div class="ios-result-section">
+                <div class="ios-result-section-title">调整参数</div>
+                <div class="ios-result-details">
+                    <div class="ios-result-detail">
+                        <div class="ios-result-detail-label">缩放比例</div>
+                        <div id="scale-ratio" class="ios-result-detail-value">1.0000</div>
+                    </div>
+                    <div class="ios-result-detail">
+                        <div class="ios-result-detail-label">偏移比例</div>
+                        <div id="offset-ratio" class="ios-result-detail-value">0.0000</div>
+                    </div>
+                    <div class="ios-result-detail">
+                        <div class="ios-result-detail-label">RSI 状态</div>
+                        <div id="rsi-status" class="ios-result-detail-value rsi-status">中性</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 网格层级组 -->
+            <div class="ios-result-section">
+                <div class="ios-result-section-title">网格层级分布</div>
+                <div class="grid-levels-container" id="grid-levels-container">
+                    <!-- 动态生成网格层级 -->
+                </div>
+            </div>
+
+            <!-- 策略建议组 -->
+            <div class="ios-result-section">
+                <div class="ios-result-section-title">策略建议</div>
+                <div class="strategy-advice" id="strategy-advice">
+                    <!-- 动态生成策略建议 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="theme-toggle" style="text-align:center;margin:32px 0 0 0;cursor:pointer;font-size:1.7em;user-select:none;">
+        <span id="theme-emoji" aria-label="切换暗黑/白天模式">🌙</span>
+    </div>
+
+    <!-- Tips 弹窗 -->
+    <div class="tips-popup" id="tips-offset">
+        <div class="tips-header">📍 偏移比例说明</div>
+        <div class="tips-content">
+            <p><strong>作用：</strong>控制网格区间中心位置的偏移</p>
+            <p><strong>计算：</strong>偏移 = ((RSI - 50) / 50) × 偏移比例</p>
+            <div class="tips-examples">
+                <div class="tips-example">
+                    <span class="example-label">RSI = 80：</span>
+                    <span class="example-value">向上偏移 6%</span>
+                </div>
+                <div class="tips-example">
+                    <span class="example-label">RSI = 20：</span>
+                    <span class="example-value">向下偏移 6%</span>
+                </div>
+            </div>
+            <p class="tips-note">💡 偏移比例越大，网格对 RSI 变化越敏感</p>
+        </div>
+    </div>
+
+    <div class="tips-popup" id="tips-scale">
+        <div class="tips-header">📏 缩放比例说明</div>
+        <div class="tips-content">
+            <p><strong>作用：</strong>控制网格区间宽度的扩展</p>
+            <p><strong>计算：</strong>缩放 = 1 + (|RSI - 50| / 50) × 缩放比例</p>
+            <div class="tips-examples">
+                <div class="tips-example">
+                    <span class="example-label">RSI = 80/20：</span>
+                    <span class="example-value">区间扩大 12%</span>
+                </div>
+                <div class="tips-example">
+                    <span class="example-label">RSI = 50：</span>
+                    <span class="example-value">区间不变</span>
+                </div>
+            </div>
+            <p class="tips-note">💡 RSI 越极端，网格越稀疏，避免密集亏损</p>
+        </div>
+    </div>
+
+    <div class="tips-popup" id="tips-levels">
+        <div class="tips-header">🎯 网格层数说明</div>
+        <div class="tips-content">
+            <p><strong>作用：</strong>在调整后区间内的网格划分数量</p>
+            <div class="tips-examples">
+                <div class="tips-example">
+                    <span class="example-label">层数多：</span>
+                    <span class="example-value">交易频繁，收益稳定</span>
+                </div>
+                <div class="tips-example">
+                    <span class="example-label">层数少：</span>
+                    <span class="example-value">交易稀疏，单次收益大</span>
+                </div>
+            </div>
+            <div class="tips-recommendations">
+                <div class="tips-rec-title">💡 推荐设置：</div>
+                <div class="tips-rec-item">新手：5-10 层</div>
+                <div class="tips-rec-item">进阶：10-20 层</div>
+                <div class="tips-rec-item">专业：20+ 层</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
